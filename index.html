@@ -23,6 +23,7 @@
   --warn:#A4551A;
   --warn-soft:#FBEEE1;
   --danger:#B3261E;
+  --ok:#0B6E4F;
 
   --lv0-bg:#EDF1F4;   --lv0-fg:#77858F;
   --lv3-bg:#E8EEF4;   --lv3-fg:#4A5C6E;
@@ -51,6 +52,7 @@
     --warn:#E0A264;
     --warn-soft:#2E2318;
     --danger:#F2857D;
+    --ok:#4ECB9A;
 
     --lv0-bg:#1A2229;   --lv0-fg:#7C8B99;
     --lv3-bg:#1C2831;   --lv3-fg:#8FA3B5;
@@ -77,6 +79,7 @@
   --warn:#E0A264;
   --warn-soft:#2E2318;
   --danger:#F2857D;
+  --ok:#4ECB9A;
 
   --lv0-bg:#1A2229;   --lv0-fg:#7C8B99;
   --lv3-bg:#1C2831;   --lv3-fg:#8FA3B5;
@@ -108,12 +111,6 @@ body{
 .masthead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
 h1{font-size:26px;font-weight:300;letter-spacing:-0.01em;margin:0 0 4px;text-wrap:balance;}
 .subtitle{margin:0;color:var(--ink-muted);font-size:13.5px;}
-.theme-btn{
-  background:var(--surface);color:var(--ink-muted);border:1px solid var(--line);
-  border-radius:var(--radius);padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer;
-  font-family:inherit;white-space:nowrap;
-}
-.theme-btn:hover{border-color:var(--line-strong);color:var(--ink);}
 
 /* ---------- summary ---------- */
 .summary{
@@ -128,11 +125,12 @@ h1{font-size:26px;font-weight:300;letter-spacing:-0.01em;margin:0 0 4px;text-wra
 .sum-value.money.neg{color:var(--danger);}
 .sum-sub{font-size:12px;color:var(--ink-muted);margin-top:4px;}
 
-/* ---------- toolbar ---------- */
-.toolbar{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  margin:14px 0 22px;
+/* ---------- bars ---------- */
+.bar{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin-top:12px;
 }
+.bar-label{font-size:11.5px;color:var(--ink-muted);white-space:nowrap;}
 .ratio-box{
   display:flex;align-items:center;gap:8px;
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
@@ -141,18 +139,46 @@ h1{font-size:26px;font-weight:300;letter-spacing:-0.01em;margin:0 0 4px;text-wra
 .ratio-box label{color:var(--ink-muted);font-size:12.5px;}
 .ratio-box input{
   width:62px;background:transparent;border:none;border-bottom:1px solid var(--line-strong);
-  color:var(--ink);font:inherit;font-size:13px;text-align:right;padding:1px 2px;
+  color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:13px;text-align:right;padding:1px 2px;
 }
 .ratio-box input:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:0;}
 .spacer{flex:1 1 auto;}
 .btn{
   background:transparent;color:var(--ink-muted);border:1px solid var(--line);
   border-radius:var(--radius);padding:7px 13px;font-family:inherit;font-size:12.5px;cursor:pointer;
+  white-space:nowrap;
 }
 .btn:hover{border-color:var(--line-strong);color:var(--ink);}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn.primary:hover{opacity:0.88;color:#fff;}
+.btn.del:hover{border-color:var(--danger);color:var(--danger);}
+.btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+.text-in{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  color:var(--ink);font-family:inherit;font-size:12.5px;padding:7px 10px;min-width:0;
+}
+.text-in:focus{outline:none;border-color:var(--accent);}
+select.text-in{max-width:230px;}
+
+.save-note{font-size:11.5px;color:var(--ok);min-height:1.2em;}
+.save-note.warn{color:var(--warn);}
+
+.data-panel{
+  margin-top:10px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:14px 16px;
+}
+.data-panel p{margin:0 0 9px;font-size:12.5px;color:var(--ink-muted);}
+.data-panel textarea{
+  width:100%;min-height:110px;resize:vertical;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);
+  color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.5;padding:9px 10px;
+}
+.data-panel textarea:focus{outline:none;border-color:var(--accent);}
+.data-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;align-items:center;}
 
 /* ---------- person nodes ---------- */
-.tree{display:flex;flex-direction:column;gap:10px;}
+.tree{display:flex;flex-direction:column;gap:10px;margin-top:22px;}
 .kids{
   display:flex;flex-direction:column;gap:10px;
   margin-top:10px;margin-left:15px;padding-left:17px;
@@ -197,17 +223,27 @@ h1{font-size:26px;font-weight:300;letter-spacing:-0.01em;margin:0 0 4px;text-wra
 .icon-btn:hover{border-color:var(--line-strong);color:var(--ink);}
 .icon-btn.del:hover{border-color:var(--danger);color:var(--danger);}
 
-.pv-row{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.pv-row{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:12px;}
 .field{display:flex;flex-direction:column;gap:3px;}
+.field-head{display:flex;align-items:center;gap:6px;min-height:18px;}
 .field-label{font-size:11.5px;color:var(--ink-muted);}
-.pv-input{
+.auto-tag{
+  font-size:10.5px;padding:1px 6px;border-radius:var(--radius);
+  background:var(--accent-soft);color:var(--accent);white-space:nowrap;
+}
+.auto-tag.manual{background:var(--warn-soft);color:var(--warn);}
+.reset-auto{
+  background:transparent;border:none;color:var(--accent);font-family:inherit;
+  font-size:10.5px;cursor:pointer;padding:1px 3px;text-decoration:underline;
+}
+.val-input{
   width:150px;background:var(--surface-2);border:none;border-bottom:1px solid var(--line-strong);
   color:var(--ink);font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
   font-size:15px;text-align:right;padding:7px 9px;border-radius:0;
 }
-.pv-input:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:6px;}
-.pv-hint{font-size:11.5px;color:var(--ink-muted);min-height:1.2em;}
-.bv-readout{font-size:15px;color:var(--ink-muted);padding-bottom:7px;}
+.val-input:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:6px;}
+.val-input.manual{border-bottom-color:var(--warn);}
+.unit-hint{font-size:11.5px;color:var(--ink-muted);min-height:1.2em;}
 
 .calc-line{
   display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
@@ -228,7 +264,7 @@ h1{font-size:26px;font-weight:300;letter-spacing:-0.01em;margin:0 0 4px;text-wra
 /* ---------- reference ---------- */
 .ref{margin-top:44px;border-top:1px solid var(--line);padding-top:26px;}
 .ref h2{font-size:15px;font-weight:600;margin:0 0 12px;}
-.ref h2 + p, .ref p{color:var(--ink-muted);font-size:13px;margin:0 0 14px;max-width:62ch;}
+.ref p{color:var(--ink-muted);font-size:13px;margin:0 0 14px;max-width:62ch;}
 .formula{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   padding:14px 16px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;
@@ -253,8 +289,9 @@ tbody tr:hover{background:var(--surface);}
   .summary > div:first-child{border-top:none;}
   .sum-value{font-size:23px;}
   .kids{margin-left:6px;padding-left:12px;}
-  .pv-input{width:132px;}
+  .val-input{width:136px;}
   .card-actions{margin-left:0;width:100%;}
+  select.text-in{max-width:100%;flex:1 1 140px;}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;}}
 </style>
@@ -265,9 +302,9 @@ tbody tr:hover{background:var(--surface);}
   <header class="masthead">
     <div>
       <h1>후원수당 계산기</h1>
-      <p class="subtitle">그룹 PV를 입력하면 3%~21% 비율과 차액 지급액을 계산합니다.</p>
+      <p class="subtitle">그룹 PV로 비율을 정하고, BV에 곱해 차액 지급액을 계산합니다.</p>
     </div>
-    <button type="button" class="theme-btn" id="themeBtn">테마 전환</button>
+    <button type="button" class="btn" id="themeBtn">테마 전환</button>
   </header>
 
   <section class="summary" aria-label="요약">
@@ -288,15 +325,39 @@ tbody tr:hover{background:var(--surface);}
     </div>
   </section>
 
-  <div class="toolbar">
+  <div class="bar">
     <div class="ratio-box">
-      <label for="ratioInput">PV : BV</label>
-      <span class="num">1 :</span>
-      <input type="text" id="ratioInput" inputmode="decimal" value="1.78" aria-label="PV 대비 BV 비율">
+      <label for="ratioInput">BV 자동값 · PV ×</label>
+      <input type="text" id="ratioInput" inputmode="decimal" value="1.78" aria-label="PV 대비 BV 배율">
     </div>
     <div class="spacer"></div>
     <button type="button" class="btn" id="exampleBtn">예시 불러오기</button>
     <button type="button" class="btn" id="resetBtn">전체 초기화</button>
+  </div>
+
+  <div class="bar">
+    <span class="bar-label">저장</span>
+    <input type="text" class="text-in" id="saveName" placeholder="시나리오 이름" aria-label="저장할 시나리오 이름" style="flex:0 1 180px;">
+    <button type="button" class="btn primary" id="saveBtn">저장</button>
+    <select class="text-in" id="slotSelect" aria-label="저장된 시나리오"></select>
+    <button type="button" class="btn" id="loadBtn">불러오기</button>
+    <button type="button" class="btn del" id="delBtn">삭제</button>
+    <div class="spacer"></div>
+    <button type="button" class="btn" id="dataBtn">백업 · 복원</button>
+  </div>
+  <div class="bar"><span class="save-note" id="saveNote"></span></div>
+
+  <div class="data-panel" id="dataPanel" hidden>
+    <p>
+      아래 텍스트가 현재 입력값 전체입니다. 복사해서 메모장이나 메신저에 붙여두면 다른 기기·브라우저에서도
+      그대로 되살릴 수 있습니다. 반대로 예전에 복사해둔 텍스트를 붙여넣고 <strong>가져오기</strong>를 누르면 그 상태로 돌아갑니다.
+    </p>
+    <textarea id="dataText" spellcheck="false" aria-label="백업 데이터"></textarea>
+    <div class="data-actions">
+      <button type="button" class="btn" id="copyBtn">전체 선택 · 복사</button>
+      <button type="button" class="btn primary" id="importBtn">가져오기</button>
+      <span class="save-note" id="dataNote"></span>
+    </div>
   </div>
 
   <div class="tree" id="tree"></div>
@@ -304,14 +365,18 @@ tbody tr:hover{background:var(--surface);}
   <section class="ref">
     <h2>계산 방식</h2>
     <p>
-      각 구성원의 <strong>개인 그룹 PV</strong>를 직접 입력합니다. 이 값으로 본인의 후원수당 비율이 정해지고,
-      비율은 BV에 곱해 총액이 됩니다. 실제로 받는 금액은 그 총액에서
-      <strong>직속 하위 각각의 총액을 뺀 차액</strong>입니다. 그래서 계산은 가장 아래 단계에서 먼저 확정되고
-      위로 올라옵니다.
+      후원수당 <strong>비율은 개인 그룹 PV</strong>로 정해지고, <strong>금액은 BV</strong>에 그 비율을 곱해 나옵니다.
+      실제로 받는 금액은 본인 총액에서 <strong>직속 하위 각각의 총액을 뺀 차액</strong>입니다.
+      그래서 계산은 가장 아래 단계에서 먼저 확정되고 위로 올라옵니다.
     </p>
-    <div class="formula">BV&nbsp;&nbsp;&nbsp;&nbsp;= 개인 그룹 PV × <span id="fRatio">1.78</span>
-총액&nbsp;&nbsp;= BV × 본인 비율
+    <div class="formula">비율&nbsp;&nbsp;&nbsp;= 개인 그룹 PV → 비율표
+총액&nbsp;&nbsp;= BV × 비율
 실수령 = 총액 − Σ(직속 하위 각각의 총액)</div>
+    <p style="margin-top:14px;">
+      BV는 <strong>사람마다 직접 입력</strong>할 수 있습니다. PV : BV 비율이 제품 구성에 따라 달라지기 때문입니다.
+      값을 건드리지 않으면 상단에 설정한 배율(기본 1.78)로 자동 계산되고, 한 번이라도 직접 입력하면
+      <em>직접 입력</em> 표시가 붙으면서 그 값이 고정됩니다. <em>자동으로</em>를 누르면 다시 자동값으로 돌아갑니다.
+    </p>
 
     <h2 style="margin-top:28px;">후원수당 비율표</h2>
     <div class="table-scroll">
@@ -325,10 +390,10 @@ tbody tr:hover{background:var(--surface);}
 
     <h2 style="margin-top:28px;">입력할 때 주의할 점</h2>
     <ul>
-      <li><strong>개인 그룹 PV는 하위를 포함한 값</strong>입니다. 상위의 값이 직속 하위 PV 합보다 작으면 경고가 표시됩니다.</li>
+      <li><strong>개인 그룹 PV와 BV 모두 하위를 포함한 값</strong>입니다. 상위의 값이 직속 하위 합보다 작으면 경고가 표시됩니다.</li>
       <li>후원수당 비율 <strong>21%를 달성한 레그의 실적은 상위의 개인 그룹 PV에서 제외</strong>됩니다. 하위가 21%에 도달하면 상위 PV에서 그 레그를 빼고 입력하세요.</li>
       <li>다운라인이 21%를 달성하면 상위 계열도 21%로 인정되지만, 이 계산기는 입력한 그룹 PV만으로 비율을 정합니다.</li>
-      <li>PV : BV 비율은 제품마다 다를 수 있고 회계연도별로 조정됩니다. 기본값 1.78은 PF2027 기준입니다.</li>
+      <li>저장한 시나리오는 <strong>이 브라우저 안에만</strong> 남습니다. 다른 기기로 옮기려면 <strong>백업 · 복원</strong>의 텍스트를 복사해 가세요.</li>
     </ul>
 
     <p class="disclaimer">
@@ -361,12 +426,8 @@ function rateFor(pv) {
 }
 
 /* ---------------- 포맷터 ---------------- */
-function fmtInt(n) {
-  return Math.round(n).toLocaleString("ko-KR");
-}
-function fmtWon(n) {
-  return fmtInt(n) + "원";
-}
+function fmtInt(n) { return Math.round(n).toLocaleString("ko-KR"); }
+function fmtWon(n) { return fmtInt(n) + "원"; }
 function korUnit(n) {
   n = Math.round(n);
   if (n === 0) return "0";
@@ -381,14 +442,21 @@ function korUnit(n) {
   if (rest || parts.length === 0) parts.push(fmtInt(rest));
   return sign + parts.join(" ");
 }
+function digitsOf(s) {
+  var d = String(s).replace(/[^0-9]/g, "");
+  return d ? parseInt(d, 10) : 0;
+}
 
 /* ---------------- 상태 ---------------- */
-var STORAGE_KEY = "amway-bonus-v1";
+var STATE_KEY = "amway-bonus-v2";
+var SLOTS_KEY = "amway-bonus-slots-v1";
+var THEME_KEY = "amway-bonus-theme";
+
 var uid = 0;
 function nextId() { uid += 1; return "n" + uid; }
 
 function makeNode(name, pv, children) {
-  return { id: nextId(), name: name, pv: pv, children: children || [] };
+  return { id: nextId(), name: name, pv: pv, bv: 0, bvAuto: true, children: children || [] };
 }
 
 function exampleTree() {
@@ -400,45 +468,71 @@ function exampleTree() {
     makeNode("다운라인 D", 3400000, [])
   ]);
 }
-
 function emptyTree() {
   uid = 0;
   return makeNode("나", 0, [makeNode("다운라인 1", 0, [])]);
 }
 
-var state = { ratio: 1.78, root: exampleTree(), isExample: true };
+var state = { ratio: 1.78, root: exampleTree() };
 
-function save() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      ratio: state.ratio, root: state.root, isExample: state.isExample
-    }));
-  } catch (e) { /* 저장 불가 환경은 무시 */ }
+/* 저장된 트리를 현재 스키마로 정규화하고 uid 를 이어 붙인다 */
+function normalizeTree(root) {
+  var maxId = 0;
+  (function walk(n) {
+    if (!n || typeof n !== "object") return;
+    if (typeof n.id === "string" && n.id.charAt(0) === "n") {
+      var v = parseInt(n.id.slice(1), 10);
+      if (!isNaN(v) && v > maxId) maxId = v;
+    } else {
+      n.id = null;
+    }
+    n.name = typeof n.name === "string" ? n.name : "이름 없음";
+    n.pv = Number(n.pv) || 0;
+    n.bv = Number(n.bv) || 0;
+    n.bvAuto = n.bvAuto !== false;      /* 구버전 데이터는 자동으로 취급 */
+    n.children = Array.isArray(n.children) ? n.children : [];
+    n.children.forEach(walk);
+  })(root);
+  uid = Math.max(uid, maxId);
+  (function fill(n) {
+    if (!n.id) n.id = nextId();
+    n.children.forEach(fill);
+  })(root);
+  return root;
 }
 
-function load() {
+function snapshot() {
+  return { v: 2, ratio: state.ratio, root: state.root };
+}
+
+function saveCurrent() {
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(snapshot())); }
+  catch (e) { /* 저장 불가 환경은 무시 */ }
+}
+
+function loadCurrent() {
   try {
-    var raw = localStorage.getItem(STORAGE_KEY);
+    var raw = localStorage.getItem(STATE_KEY) || localStorage.getItem("amway-bonus-v1");
     if (!raw) return;
     var data = JSON.parse(raw);
     if (!data || !data.root) return;
-    var maxId = 0;
-    (function walk(n) {
-      if (!n || typeof n !== "object") return;
-      if (typeof n.id === "string" && n.id.charAt(0) === "n") {
-        var v = parseInt(n.id.slice(1), 10);
-        if (!isNaN(v) && v > maxId) maxId = v;
-      }
-      n.pv = Number(n.pv) || 0;
-      n.name = typeof n.name === "string" ? n.name : "이름 없음";
-      n.children = Array.isArray(n.children) ? n.children : [];
-      n.children.forEach(walk);
-    })(data.root);
-    uid = maxId;
-    state.root = data.root;
+    uid = 0;
+    state.root = normalizeTree(data.root);
     state.ratio = Number(data.ratio) > 0 ? Number(data.ratio) : 1.78;
-    state.isExample = !!data.isExample;
   } catch (e) { /* 손상된 값은 무시하고 기본 상태 사용 */ }
+}
+
+/* ---------------- 저장 슬롯 ---------------- */
+function readSlots() {
+  try {
+    var raw = localStorage.getItem(SLOTS_KEY);
+    var arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) { return []; }
+}
+function writeSlots(arr) {
+  try { localStorage.setItem(SLOTS_KEY, JSON.stringify(arr)); return true; }
+  catch (e) { return false; }
 }
 
 /* ---------------- 트리 유틸 ---------------- */
@@ -446,14 +540,6 @@ function findParent(node, targetId) {
   for (var i = 0; i < node.children.length; i++) {
     if (node.children[i].id === targetId) return node;
     var found = findParent(node.children[i], targetId);
-    if (found) return found;
-  }
-  return null;
-}
-function findNode(node, targetId) {
-  if (node.id === targetId) return node;
-  for (var i = 0; i < node.children.length; i++) {
-    var found = findNode(node.children[i], targetId);
     if (found) return found;
   }
   return null;
@@ -471,29 +557,26 @@ function countNodes(node) {
 }
 
 /* ---------------- 계산 (아래에서 위로) ---------------- */
+function bvOf(node) {
+  return node.bvAuto === false ? (node.bv || 0) : (node.pv || 0) * state.ratio;
+}
+
 function compute(node) {
   var kids = node.children.map(compute);
   var pv = node.pv || 0;
-  var bv = pv * state.ratio;
+  var bv = bvOf(node);
   var rate = rateFor(pv);
   var gross = Math.round(bv * rate);
-  var childGross = 0;
-  var childPv = 0;
+  var childGross = 0, childPv = 0, childBv = 0;
   kids.forEach(function (k) {
     childGross += k.gross;
-    /* 21% 달성 레그는 규정상 상위 개인 그룹 PV에서 제외되므로 합산 검증에서 뺀다 */
-    if (k.rate < 0.21) childPv += k.pv;
+    /* 21% 달성 레그는 규정상 상위 개인 그룹 PV에서 제외되므로 합계 검증에서 뺀다 */
+    if (k.rate < 0.21) { childPv += k.pv; childBv += k.bv; }
   });
   return {
-    node: node,
-    pv: pv,
-    bv: bv,
-    rate: rate,
-    gross: gross,
-    childGross: childGross,
-    childPv: childPv,
-    net: gross - childGross,
-    kids: kids
+    node: node, pv: pv, bv: bv, rate: rate, gross: gross,
+    childGross: childGross, childPv: childPv, childBv: childBv,
+    net: gross - childGross, kids: kids
   };
 }
 
@@ -517,7 +600,6 @@ function el(tag, cls, text) {
 
 function buildCard(node, depth) {
   var wrapper = el("div");
-
   var card = el("div", "card" + (depth === 0 ? " root" : ""));
 
   /* 상단: 단계 · 이름 · 비율 · 액션 */
@@ -531,9 +613,8 @@ function buildCard(node, depth) {
   nameInput.setAttribute("aria-label", "이름");
   nameInput.addEventListener("input", function () {
     node.name = nameInput.value;
-    state.isExample = false;
     if (depth === 0) refs.rootLabel.textContent = (node.name || "본인") + "의 후원수당";
-    save();
+    saveCurrent();
   });
   top.appendChild(nameInput);
 
@@ -545,67 +626,99 @@ function buildCard(node, depth) {
   addBtn.type = "button";
   addBtn.addEventListener("click", function () {
     node.children.push(makeNode("다운라인 " + (node.children.length + 1), 0, []));
-    state.isExample = false;
-    render();
-    save();
+    render(); saveCurrent();
   });
   actions.appendChild(addBtn);
 
   if (depth > 0) {
-    var delBtn = el("button", "icon-btn del", "삭제");
-    delBtn.type = "button";
-    delBtn.addEventListener("click", function () {
+    var delNodeBtn = el("button", "icon-btn del", "삭제");
+    delNodeBtn.type = "button";
+    delNodeBtn.addEventListener("click", function () {
       var parent = findParent(state.root, node.id);
       if (!parent) return;
       parent.children = parent.children.filter(function (c) { return c.id !== node.id; });
-      state.isExample = false;
-      render();
-      save();
+      render(); saveCurrent();
     });
-    actions.appendChild(delBtn);
+    actions.appendChild(delNodeBtn);
   }
   top.appendChild(actions);
   card.appendChild(top);
 
-  /* PV 입력 · BV 표시 */
-  var pvRow = el("div", "pv-row");
+  /* PV · BV 입력 */
+  var row = el("div", "pv-row");
 
+  /* PV */
   var pvField = el("div", "field");
+  var pvHead = el("div", "field-head");
   var pvLabel = el("label", "field-label", "개인 그룹 PV");
   pvLabel.setAttribute("for", "pv-" + node.id);
-  pvField.appendChild(pvLabel);
-  var pvInput = el("input", "pv-input num");
-  pvInput.type = "text";
-  pvInput.inputMode = "numeric";
+  pvHead.appendChild(pvLabel);
+  pvField.appendChild(pvHead);
+  var pvInput = el("input", "val-input num");
+  pvInput.type = "text"; pvInput.inputMode = "numeric";
   pvInput.id = "pv-" + node.id;
   pvInput.value = node.pv ? fmtInt(node.pv) : "";
   pvInput.placeholder = "0";
   pvField.appendChild(pvInput);
-  pvRow.appendChild(pvField);
+  var pvHint = el("div", "unit-hint");
+  pvField.appendChild(pvHint);
+  row.appendChild(pvField);
 
+  /* BV */
   var bvField = el("div", "field");
-  bvField.appendChild(el("span", "field-label", "BV (자동)"));
-  var bvOut = el("div", "bv-readout num", "0");
-  bvField.appendChild(bvOut);
-  pvRow.appendChild(bvField);
+  var bvHead = el("div", "field-head");
+  var bvLabel = el("label", "field-label", "BV");
+  bvLabel.setAttribute("for", "bv-" + node.id);
+  bvHead.appendChild(bvLabel);
+  var autoTag = el("span", "auto-tag", "자동");
+  bvHead.appendChild(autoTag);
+  var resetAuto = el("button", "reset-auto", "자동으로");
+  resetAuto.type = "button";
+  resetAuto.hidden = true;
+  bvHead.appendChild(resetAuto);
+  bvField.appendChild(bvHead);
+  var bvInput = el("input", "val-input num");
+  bvInput.type = "text"; bvInput.inputMode = "numeric";
+  bvInput.id = "bv-" + node.id;
+  bvInput.placeholder = "0";
+  bvField.appendChild(bvInput);
+  var bvHint = el("div", "unit-hint");
+  bvField.appendChild(bvHint);
+  row.appendChild(bvField);
 
-  var hint = el("div", "pv-hint");
-  pvRow.appendChild(hint);
-  card.appendChild(pvRow);
+  card.appendChild(row);
 
+  /* PV 입력 핸들러 */
   pvInput.addEventListener("input", function () {
-    var digits = pvInput.value.replace(/[^0-9]/g, "");
-    node.pv = digits ? parseInt(digits, 10) : 0;
-    state.isExample = false;
-    recompute();
-    save();
-  });
-  pvInput.addEventListener("blur", function () {
-    pvInput.value = node.pv ? fmtInt(node.pv) : "";
+    node.pv = digitsOf(pvInput.value);
+    recompute(); saveCurrent();
   });
   pvInput.addEventListener("focus", function () {
     pvInput.value = node.pv ? String(node.pv) : "";
     pvInput.select();
+  });
+  pvInput.addEventListener("blur", function () {
+    pvInput.value = node.pv ? fmtInt(node.pv) : "";
+  });
+
+  /* BV 입력 핸들러 — 손대는 순간 직접 입력으로 전환 */
+  bvInput.addEventListener("input", function () {
+    node.bv = digitsOf(bvInput.value);
+    node.bvAuto = false;
+    recompute(); saveCurrent();
+  });
+  bvInput.addEventListener("focus", function () {
+    var cur = Math.round(bvOf(node));
+    bvInput.value = cur ? String(cur) : "";
+    bvInput.select();
+  });
+  bvInput.addEventListener("blur", function () {
+    var cur = Math.round(bvOf(node));
+    bvInput.value = cur ? fmtInt(cur) : "";
+  });
+  resetAuto.addEventListener("click", function () {
+    node.bvAuto = true;
+    recompute(); saveCurrent();
   });
 
   /* 계산 라인 */
@@ -629,9 +742,10 @@ function buildCard(node, depth) {
   wrapper.appendChild(card);
 
   refs[node.id] = {
-    card: card, badge: badge, bvOut: bvOut, hint: hint,
-    calc: calc, grossOut: grossOut, minusOut: minusOut, netOut: netOut,
-    noteBox: noteBox, pvInput: pvInput
+    card: card, badge: badge,
+    pvInput: pvInput, pvHint: pvHint,
+    bvInput: bvInput, bvHint: bvHint, autoTag: autoTag, resetAuto: resetAuto,
+    calc: calc, grossOut: grossOut, minusOut: minusOut, netOut: netOut, noteBox: noteBox
   };
 
   if (node.children.length) {
@@ -641,7 +755,6 @@ function buildCard(node, depth) {
     });
     wrapper.appendChild(kidsEl);
   }
-
   return wrapper;
 }
 
@@ -652,13 +765,26 @@ function recompute() {
   all.forEach(function (r) {
     var ref = refs[r.node.id];
     if (!ref) return;
+    var node = r.node;
 
     var pct = Math.round(r.rate * 100);
     ref.badge.textContent = pct + "%";
     ref.badge.className = "rate-badge lv" + pct;
 
-    ref.bvOut.textContent = fmtInt(r.bv);
-    ref.hint.textContent = r.pv ? korUnit(r.pv) + " PV" : "20만 PV 미만은 미지급";
+    ref.pvHint.textContent = r.pv ? korUnit(r.pv) + " PV" : "20만 PV 미만은 미지급";
+
+    /* BV: 자동이면 값을 덮어쓰고, 직접 입력이면 사용자 값을 유지 */
+    var manual = node.bvAuto === false;
+    ref.autoTag.textContent = manual ? "직접 입력" : "자동";
+    ref.autoTag.className = "auto-tag" + (manual ? " manual" : "");
+    ref.resetAuto.hidden = !manual;
+    ref.bvInput.className = "val-input num" + (manual ? " manual" : "");
+    if (document.activeElement !== ref.bvInput) {
+      ref.bvInput.value = r.bv ? fmtInt(r.bv) : "";
+    }
+    ref.bvHint.textContent = manual
+      ? (r.bv ? korUnit(r.bv) + " BV" : "0 BV")
+      : "PV × " + state.ratio;
 
     ref.grossOut.textContent = fmtWon(r.gross);
     ref.minusOut.textContent = fmtWon(r.childGross);
@@ -666,36 +792,32 @@ function recompute() {
 
     var isNeg = r.net < 0;
     ref.calc.className = "calc-line" + (isNeg ? " is-neg" : "");
-    ref.card.className = ref.card.className.replace(/ ?neg/, "") + (isNeg ? " neg" : "");
+    ref.card.className = "card" + (r.node === state.root ? " root" : "") + (isNeg ? " neg" : "");
 
     /* 경고 · 안내 */
     var notes = [];
     if (r.childPv > r.pv) {
-      notes.push({
-        cls: "note",
-        text: "직속 하위 그룹 PV 합계 " + fmtInt(r.childPv) +
-              "가 본인 그룹 PV " + fmtInt(r.pv) + "보다 큽니다. 개인 그룹 PV는 하위를 포함한 값입니다."
-      });
+      notes.push({ cls: "note", text:
+        "직속 하위 그룹 PV 합계 " + fmtInt(r.childPv) + "가 본인 그룹 PV " + fmtInt(r.pv) +
+        "보다 큽니다. 개인 그룹 PV는 하위를 포함한 값입니다." });
+    }
+    if (r.childBv > r.bv) {
+      notes.push({ cls: "note", text:
+        "직속 하위 BV 합계 " + fmtInt(r.childBv) + "가 본인 BV " + fmtInt(Math.round(r.bv)) +
+        "보다 큽니다. BV도 하위를 포함한 값이어야 합니다." });
     }
     if (isNeg) {
-      notes.push({
-        cls: "note",
-        text: "실수령이 음수입니다. 하위 비율이 본인보다 높은 입력이므로 그룹 PV를 확인하세요."
-      });
+      notes.push({ cls: "note", text:
+        "실수령이 음수입니다. 하위 비율이 본인보다 높은 입력이므로 PV와 BV를 확인하세요." });
     }
-    var has21Child = r.kids.some(function (k) { return k.rate >= 0.21; });
-    if (has21Child) {
-      notes.push({
-        cls: "note info",
-        text: "21%를 달성한 하위 레그가 있습니다. 실제 규정에서는 그 레그의 실적이 본인 개인 그룹 PV에서 제외됩니다."
-      });
+    if (r.kids.some(function (k) { return k.rate >= 0.21; })) {
+      notes.push({ cls: "note info", text:
+        "21%를 달성한 하위 레그가 있습니다. 실제 규정에서는 그 레그의 실적이 본인 개인 그룹 PV에서 제외됩니다." });
     }
 
     ref.noteBox.textContent = "";
     if (notes.length) {
-      notes.forEach(function (n) {
-        ref.noteBox.appendChild(el("div", n.cls, n.text));
-      });
+      notes.forEach(function (n) { ref.noteBox.appendChild(el("div", n.cls, n.text)); });
       ref.noteBox.hidden = false;
     } else {
       ref.noteBox.hidden = true;
@@ -706,12 +828,12 @@ function recompute() {
   var totalNet = all.reduce(function (s, r) { return s + r.net; }, 0);
   refs.sumRootNet.textContent = fmtWon(result.net);
   refs.sumRootNet.className = "sum-value money num" + (result.net < 0 ? " neg" : "");
-  refs.sumRootSub.textContent = "그룹 PV " + fmtInt(result.pv) +
-    " · " + Math.round(result.rate * 100) + "%";
+  refs.sumRootSub.textContent = "그룹 PV " + fmtInt(result.pv) + " · " + Math.round(result.rate * 100) + "%";
   refs.sumAll.textContent = fmtWon(totalNet);
   refs.sumCount.textContent = fmtInt(countNodes(state.root)) + "명";
   refs.sumDepth.textContent = "최대 " + maxDepth(state.root) + "단계";
-  refs.fRatio.textContent = String(state.ratio);
+
+  if (!dataPanel.hidden) dataText.value = JSON.stringify(snapshot(), null, 2);
 }
 
 function render() {
@@ -721,8 +843,7 @@ function render() {
     sumRootSub: document.getElementById("sumRootSub"),
     sumAll: document.getElementById("sumAll"),
     sumCount: document.getElementById("sumCount"),
-    sumDepth: document.getElementById("sumDepth"),
-    fRatio: document.getElementById("fRatio")
+    sumDepth: document.getElementById("sumDepth")
   };
   refs.rootLabel.textContent = (state.root.name || "본인") + "의 후원수당";
   treeEl.textContent = "";
@@ -730,14 +851,13 @@ function render() {
   recompute();
 }
 
-/* ---------------- 비율표 렌더 ---------------- */
+/* ---------------- 비율표 ---------------- */
 (function renderRateTable() {
   var body = document.getElementById("rateTableBody");
   RATE_TABLE.forEach(function (row) {
     var tr = el("tr");
     tr.appendChild(el("td", null, korUnit(row.min) + " PV 이상"));
-    var td = el("td", "r num", Math.round(row.rate * 100) + "%");
-    tr.appendChild(td);
+    tr.appendChild(el("td", "r num", Math.round(row.rate * 100) + "%"));
     body.appendChild(tr);
   });
   var last = el("tr");
@@ -748,43 +868,160 @@ function render() {
 
 /* ---------------- 컨트롤 ---------------- */
 var ratioInput = document.getElementById("ratioInput");
+var saveNote = document.getElementById("saveNote");
+var slotSelect = document.getElementById("slotSelect");
+var saveNameInput = document.getElementById("saveName");
+var dataPanel = document.getElementById("dataPanel");
+var dataText = document.getElementById("dataText");
+var dataNote = document.getElementById("dataNote");
+
+var noteTimer = null;
+function flash(node, msg, isWarn) {
+  node.textContent = msg;
+  node.className = "save-note" + (isWarn ? " warn" : "");
+  if (noteTimer) clearTimeout(noteTimer);
+  noteTimer = setTimeout(function () { node.textContent = ""; }, 4000);
+}
+
 ratioInput.addEventListener("input", function () {
   var v = parseFloat(ratioInput.value.replace(/[^0-9.]/g, ""));
-  if (!isNaN(v) && v > 0) {
-    state.ratio = v;
-    recompute();
-    save();
-  }
+  if (!isNaN(v) && v > 0) { state.ratio = v; recompute(); saveCurrent(); }
 });
-ratioInput.addEventListener("blur", function () {
-  ratioInput.value = String(state.ratio);
-});
+ratioInput.addEventListener("blur", function () { ratioInput.value = String(state.ratio); });
 
 document.getElementById("exampleBtn").addEventListener("click", function () {
-  state.root = exampleTree();
-  state.isExample = true;
-  render();
-  save();
+  state.root = exampleTree(); render(); saveCurrent();
 });
-
 document.getElementById("resetBtn").addEventListener("click", function () {
-  state.root = emptyTree();
-  state.isExample = false;
-  render();
-  save();
+  state.root = emptyTree(); render(); saveCurrent();
 });
 
-/* 테마 전환: 시스템 → 라이트 → 다크 */
+/* 저장 슬롯 */
+function refreshSlots(selectName) {
+  var slots = readSlots();
+  slotSelect.textContent = "";
+  if (!slots.length) {
+    var opt = el("option", null, "저장된 시나리오 없음");
+    opt.value = "";
+    slotSelect.appendChild(opt);
+    slotSelect.disabled = true;
+    document.getElementById("loadBtn").disabled = true;
+    document.getElementById("delBtn").disabled = true;
+    return;
+  }
+  slotSelect.disabled = false;
+  document.getElementById("loadBtn").disabled = false;
+  document.getElementById("delBtn").disabled = false;
+  slots.forEach(function (s) {
+    var opt = el("option", null, s.name + "  ·  " + s.savedAt);
+    opt.value = s.name;
+    slotSelect.appendChild(opt);
+  });
+  if (selectName) slotSelect.value = selectName;
+}
+
+function stamp() {
+  var d = new Date();
+  function p(n) { return String(n).padStart(2, "0"); }
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+}
+
+document.getElementById("saveBtn").addEventListener("click", function () {
+  var name = saveNameInput.value.trim();
+  if (!name) { flash(saveNote, "시나리오 이름을 입력하세요.", true); saveNameInput.focus(); return; }
+  var slots = readSlots();
+  var existing = slots.filter(function (s) { return s.name === name; })[0];
+  var payload = JSON.parse(JSON.stringify(snapshot()));
+  payload.name = name;
+  payload.savedAt = stamp();
+  if (existing) {
+    slots[slots.indexOf(existing)] = payload;
+  } else {
+    slots.push(payload);
+  }
+  if (writeSlots(slots)) {
+    refreshSlots(name);
+    flash(saveNote, existing ? "'" + name + "' 덮어썼습니다." : "'" + name + "' 저장했습니다.");
+    saveNameInput.value = "";
+  } else {
+    flash(saveNote, "이 브라우저에서는 저장을 쓸 수 없습니다. 백업 · 복원을 이용하세요.", true);
+  }
+});
+
+document.getElementById("loadBtn").addEventListener("click", function () {
+  var name = slotSelect.value;
+  if (!name) return;
+  var slot = readSlots().filter(function (s) { return s.name === name; })[0];
+  if (!slot) { flash(saveNote, "찾을 수 없습니다.", true); return; }
+  uid = 0;
+  state.root = normalizeTree(JSON.parse(JSON.stringify(slot.root)));
+  state.ratio = Number(slot.ratio) > 0 ? Number(slot.ratio) : 1.78;
+  ratioInput.value = String(state.ratio);
+  render(); saveCurrent();
+  flash(saveNote, "'" + name + "' 불러왔습니다.");
+});
+
+document.getElementById("delBtn").addEventListener("click", function () {
+  var name = slotSelect.value;
+  if (!name) return;
+  var slots = readSlots().filter(function (s) { return s.name !== name; });
+  writeSlots(slots);
+  refreshSlots();
+  flash(saveNote, "'" + name + "' 삭제했습니다.");
+});
+
+/* 백업 · 복원 */
+document.getElementById("dataBtn").addEventListener("click", function () {
+  dataPanel.hidden = !dataPanel.hidden;
+  if (!dataPanel.hidden) {
+    dataText.value = JSON.stringify(snapshot(), null, 2);
+    dataText.scrollTop = 0;
+  }
+});
+
+document.getElementById("copyBtn").addEventListener("click", function () {
+  dataText.focus();
+  dataText.select();
+  var done = false;
+  try { done = document.execCommand("copy"); } catch (e) { done = false; }
+  if (done) {
+    flash(dataNote, "클립보드에 복사했습니다.");
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(dataText.value).then(
+      function () { flash(dataNote, "클립보드에 복사했습니다."); },
+      function () { flash(dataNote, "전체 선택했습니다. Ctrl+C(⌘C)로 복사하세요.", true); }
+    );
+  } else {
+    flash(dataNote, "전체 선택했습니다. Ctrl+C(⌘C)로 복사하세요.", true);
+  }
+});
+
+document.getElementById("importBtn").addEventListener("click", function () {
+  var raw = dataText.value.trim();
+  if (!raw) { flash(dataNote, "가져올 내용이 비어 있습니다.", true); return; }
+  var data;
+  try { data = JSON.parse(raw); }
+  catch (e) { flash(dataNote, "형식이 올바르지 않습니다. 복사한 텍스트 전체를 붙여넣었는지 확인하세요.", true); return; }
+  if (!data || typeof data !== "object" || !data.root || typeof data.root !== "object") {
+    flash(dataNote, "후원수당 계산기 데이터가 아닙니다.", true); return;
+  }
+  uid = 0;
+  state.root = normalizeTree(data.root);
+  state.ratio = Number(data.ratio) > 0 ? Number(data.ratio) : 1.78;
+  ratioInput.value = String(state.ratio);
+  render(); saveCurrent();
+  flash(dataNote, "가져왔습니다.");
+});
+
+/* 테마: 시스템 → 라이트 → 다크 */
 var themeBtn = document.getElementById("themeBtn");
-var THEME_KEY = "amway-bonus-theme";
 var themeOrder = ["system", "light", "dark"];
 var themeLabel = { system: "테마: 시스템", light: "테마: 라이트", dark: "테마: 다크" };
 var theme = "system";
 try {
-  var saved = localStorage.getItem(THEME_KEY);
-  if (saved && themeOrder.indexOf(saved) !== -1) theme = saved;
+  var savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme && themeOrder.indexOf(savedTheme) !== -1) theme = savedTheme;
 } catch (e) { /* 무시 */ }
-
 function applyTheme() {
   if (theme === "system") document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme", theme);
@@ -798,8 +1035,9 @@ themeBtn.addEventListener("click", function () {
 applyTheme();
 
 /* ---------------- 시작 ---------------- */
-load();
+loadCurrent();
 ratioInput.value = String(state.ratio);
+refreshSlots();
 render();
 </script>
 </body>
