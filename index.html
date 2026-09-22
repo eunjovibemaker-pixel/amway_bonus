@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>후원수당 계산기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --canvas:#F2F5F7;
+  --surface:#FFFFFF;
+  --surface-2:#E9EEF2;
+  --ink:#101820;
+  --ink-muted:#5C6B7A;
+  --line:#D5DEE5;
+  --line-strong:#B6C4CF;
+  --accent:#005FCC;
+  --accent-soft:#E6F0FB;
+  --money:#0B6E4F;
+  --warn:#A4551A;
+  --warn-soft:#FBEEE1;
+  --danger:#B3261E;
+
+  --lv0-bg:#EDF1F4;   --lv0-fg:#77858F;
+  --lv3-bg:#E8EEF4;   --lv3-fg:#4A5C6E;
+  --lv6-bg:#D8E6F3;   --lv6-fg:#3C5670;
+  --lv9-bg:#C3DAEF;   --lv9-fg:#2F5070;
+  --lv12-bg:#A8C9E9;  --lv12-fg:#234870;
+  --lv15-bg:#86B4E2;  --lv15-fg:#153C66;
+  --lv18-bg:#4E93D6;  --lv18-fg:#FFFFFF;
+  --lv21-bg:#005FCC;  --lv21-fg:#FFFFFF;
+
+  --radius:2px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --canvas:#0E1419;
+    --surface:#161E26;
+    --surface-2:#1E2833;
+    --ink:#E7EDF2;
+    --ink-muted:#94A3B0;
+    --line:#2A3641;
+    --line-strong:#3B4A58;
+    --accent:#4D9BFF;
+    --accent-soft:#132840;
+    --money:#4ECB9A;
+    --warn:#E0A264;
+    --warn-soft:#2E2318;
+    --danger:#F2857D;
+
+    --lv0-bg:#1A2229;   --lv0-fg:#7C8B99;
+    --lv3-bg:#1C2831;   --lv3-fg:#8FA3B5;
+    --lv6-bg:#1F3243;   --lv6-fg:#9DBAD3;
+    --lv9-bg:#223D57;   --lv9-fg:#A9C9E4;
+    --lv12-bg:#24496C;  --lv12-fg:#B7D6EE;
+    --lv15-bg:#255781;  --lv15-fg:#C8E1F5;
+    --lv18-bg:#256BA6;  --lv18-fg:#EAF4FD;
+    --lv21-bg:#2E7FE0;  --lv21-fg:#FFFFFF;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --canvas:#0E1419;
+  --surface:#161E26;
+  --surface-2:#1E2833;
+  --ink:#E7EDF2;
+  --ink-muted:#94A3B0;
+  --line:#2A3641;
+  --line-strong:#3B4A58;
+  --accent:#4D9BFF;
+  --accent-soft:#132840;
+  --money:#4ECB9A;
+  --warn:#E0A264;
+  --warn-soft:#2E2318;
+  --danger:#F2857D;
+
+  --lv0-bg:#1A2229;   --lv0-fg:#7C8B99;
+  --lv3-bg:#1C2831;   --lv3-fg:#8FA3B5;
+  --lv6-bg:#1F3243;   --lv6-fg:#9DBAD3;
+  --lv9-bg:#223D57;   --lv9-fg:#A9C9E4;
+  --lv12-bg:#24496C;  --lv12-fg:#B7D6EE;
+  --lv15-bg:#255781;  --lv15-fg:#C8E1F5;
+  --lv18-bg:#256BA6;  --lv18-fg:#EAF4FD;
+  --lv21-bg:#2E7FE0;  --lv21-fg:#FFFFFF;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{
+  background:var(--canvas);
+  color:var(--ink);
+  font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  letter-spacing:0.01em;
+  padding-inline:16px;
+  padding-block:0;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:900px;margin-inline:auto;padding-block:32px 72px;}
+.num{font-family:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;}
+
+/* ---------- header ---------- */
+.masthead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
+h1{font-size:26px;font-weight:300;letter-spacing:-0.01em;margin:0 0 4px;text-wrap:balance;}
+.subtitle{margin:0;color:var(--ink-muted);font-size:13.5px;}
+.theme-btn{
+  background:var(--surface);color:var(--ink-muted);border:1px solid var(--line);
+  border-radius:var(--radius);padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer;
+  font-family:inherit;white-space:nowrap;
+}
+.theme-btn:hover{border-color:var(--line-strong);color:var(--ink);}
+
+/* ---------- summary ---------- */
+.summary{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  display:grid;grid-template-columns:1.4fr 1fr 0.8fr;
+}
+.summary > div{padding:18px 20px;border-left:1px solid var(--line);}
+.summary > div:first-child{border-left:none;}
+.sum-label{font-size:12px;color:var(--ink-muted);margin-bottom:6px;}
+.sum-value{font-size:27px;font-weight:500;letter-spacing:-0.01em;line-height:1.2;}
+.sum-value.money{color:var(--money);}
+.sum-value.money.neg{color:var(--danger);}
+.sum-sub{font-size:12px;color:var(--ink-muted);margin-top:4px;}
+
+/* ---------- toolbar ---------- */
+.toolbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin:14px 0 22px;
+}
+.ratio-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:7px 12px;font-size:13px;
+}
+.ratio-box label{color:var(--ink-muted);font-size:12.5px;}
+.ratio-box input{
+  width:62px;background:transparent;border:none;border-bottom:1px solid var(--line-strong);
+  color:var(--ink);font:inherit;font-size:13px;text-align:right;padding:1px 2px;
+}
+.ratio-box input:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:0;}
+.spacer{flex:1 1 auto;}
+.btn{
+  background:transparent;color:var(--ink-muted);border:1px solid var(--line);
+  border-radius:var(--radius);padding:7px 13px;font-family:inherit;font-size:12.5px;cursor:pointer;
+}
+.btn:hover{border-color:var(--line-strong);color:var(--ink);}
+
+/* ---------- person nodes ---------- */
+.tree{display:flex;flex-direction:column;gap:10px;}
+.kids{
+  display:flex;flex-direction:column;gap:10px;
+  margin-top:10px;margin-left:15px;padding-left:17px;
+  border-left:1px solid var(--line-strong);
+}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;
+}
+.card.root{border-color:var(--line-strong);border-left:3px solid var(--accent);}
+.card.neg{border-color:var(--danger);}
+
+.card-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.depth-tag{
+  font-size:11px;color:var(--ink-muted);background:var(--surface-2);
+  border-radius:var(--radius);padding:2px 7px;white-space:nowrap;
+}
+.name-input{
+  background:transparent;border:none;border-bottom:1px solid transparent;
+  color:var(--ink);font-family:inherit;font-size:15px;font-weight:500;
+  padding:2px 0;min-width:70px;max-width:190px;flex:0 1 auto;
+}
+.name-input:hover{border-bottom-color:var(--line);}
+.name-input:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:1px;}
+.rate-badge{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:var(--radius);
+  background:var(--lv0-bg);color:var(--lv0-fg);white-space:nowrap;
+}
+.rate-badge.lv3{background:var(--lv3-bg);color:var(--lv3-fg);}
+.rate-badge.lv6{background:var(--lv6-bg);color:var(--lv6-fg);}
+.rate-badge.lv9{background:var(--lv9-bg);color:var(--lv9-fg);}
+.rate-badge.lv12{background:var(--lv12-bg);color:var(--lv12-fg);}
+.rate-badge.lv15{background:var(--lv15-bg);color:var(--lv15-fg);}
+.rate-badge.lv18{background:var(--lv18-bg);color:var(--lv18-fg);}
+.rate-badge.lv21{background:var(--lv21-bg);color:var(--lv21-fg);}
+.card-actions{margin-left:auto;display:flex;gap:6px;}
+.icon-btn{
+  background:transparent;border:1px solid var(--line);border-radius:var(--radius);
+  color:var(--ink-muted);font-family:inherit;font-size:12px;padding:5px 10px;cursor:pointer;white-space:nowrap;
+}
+.icon-btn:hover{border-color:var(--line-strong);color:var(--ink);}
+.icon-btn.del:hover{border-color:var(--danger);color:var(--danger);}
+
+.pv-row{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:3px;}
+.field-label{font-size:11.5px;color:var(--ink-muted);}
+.pv-input{
+  width:150px;background:var(--surface-2);border:none;border-bottom:1px solid var(--line-strong);
+  color:var(--ink);font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  font-size:15px;text-align:right;padding:7px 9px;border-radius:0;
+}
+.pv-input:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:6px;}
+.pv-hint{font-size:11.5px;color:var(--ink-muted);min-height:1.2em;}
+.bv-readout{font-size:15px;color:var(--ink-muted);padding-bottom:7px;}
+
+.calc-line{
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  border-top:1px solid var(--line);padding-top:11px;
+  font-size:13px;color:var(--ink-muted);
+}
+.calc-line .op{color:var(--ink-muted);opacity:0.75;}
+.calc-line .val{color:var(--ink);}
+.calc-line .net{font-size:18px;font-weight:600;color:var(--money);}
+.calc-line.is-neg .net{color:var(--danger);}
+
+.note{
+  margin-top:10px;font-size:12px;border-radius:var(--radius);
+  padding:7px 10px;background:var(--warn-soft);color:var(--warn);
+}
+.note.info{background:var(--accent-soft);color:var(--accent);}
+
+/* ---------- reference ---------- */
+.ref{margin-top:44px;border-top:1px solid var(--line);padding-top:26px;}
+.ref h2{font-size:15px;font-weight:600;margin:0 0 12px;}
+.ref h2 + p, .ref p{color:var(--ink-muted);font-size:13px;margin:0 0 14px;max-width:62ch;}
+.formula{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  line-height:1.9;overflow-x:auto;white-space:pre;color:var(--ink);
+}
+.table-scroll{overflow-x:auto;}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:6px;}
+th,td{text-align:left;padding:7px 12px;border-bottom:1px solid var(--line);}
+th{font-weight:500;font-size:11.5px;color:var(--ink-muted);border-bottom:1px solid var(--line-strong);}
+td.r,th.r{text-align:right;}
+tbody tr:hover{background:var(--surface);}
+.ref ul{color:var(--ink-muted);font-size:13px;padding-left:18px;margin:0 0 14px;max-width:62ch;}
+.ref li{margin-bottom:5px;}
+.disclaimer{
+  margin-top:22px;font-size:12px;color:var(--ink-muted);
+  border-left:2px solid var(--line-strong);padding-left:12px;max-width:62ch;
+}
+
+@media (max-width:680px){
+  .summary{grid-template-columns:1fr;}
+  .summary > div{border-left:none;border-top:1px solid var(--line);}
+  .summary > div:first-child{border-top:none;}
+  .sum-value{font-size:23px;}
+  .kids{margin-left:6px;padding-left:12px;}
+  .pv-input{width:132px;}
+  .card-actions{margin-left:0;width:100%;}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <h1>후원수당 계산기</h1>
+      <p class="subtitle">그룹 PV를 입력하면 3%~21% 비율과 차액 지급액을 계산합니다.</p>
+    </div>
+    <button type="button" class="theme-btn" id="themeBtn">테마 전환</button>
+  </header>
+
+  <section class="summary" aria-label="요약">
+    <div>
+      <div class="sum-label" id="rootLabel">나의 후원수당</div>
+      <div class="sum-value money num" id="sumRootNet">0원</div>
+      <div class="sum-sub" id="sumRootSub">그룹 PV 0 · 0%</div>
+    </div>
+    <div>
+      <div class="sum-label">조직 전체 지급 합계</div>
+      <div class="sum-value num" id="sumAll">0원</div>
+      <div class="sum-sub">모든 구성원의 실수령 합</div>
+    </div>
+    <div>
+      <div class="sum-label">구성원</div>
+      <div class="sum-value num" id="sumCount">0</div>
+      <div class="sum-sub" id="sumDepth">최대 0단계</div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="ratio-box">
+      <label for="ratioInput">PV : BV</label>
+      <span class="num">1 :</span>
+      <input type="text" id="ratioInput" inputmode="decimal" value="1.78" aria-label="PV 대비 BV 비율">
+    </div>
+    <div class="spacer"></div>
+    <button type="button" class="btn" id="exampleBtn">예시 불러오기</button>
+    <button type="button" class="btn" id="resetBtn">전체 초기화</button>
+  </div>
+
+  <div class="tree" id="tree"></div>
+
+  <section class="ref">
+    <h2>계산 방식</h2>
+    <p>
+      각 구성원의 <strong>개인 그룹 PV</strong>를 직접 입력합니다. 이 값으로 본인의 후원수당 비율이 정해지고,
+      비율은 BV에 곱해 총액이 됩니다. 실제로 받는 금액은 그 총액에서
+      <strong>직속 하위 각각의 총액을 뺀 차액</strong>입니다. 그래서 계산은 가장 아래 단계에서 먼저 확정되고
+      위로 올라옵니다.
+    </p>
+    <div class="formula">BV&nbsp;&nbsp;&nbsp;&nbsp;= 개인 그룹 PV × <span id="fRatio">1.78</span>
+총액&nbsp;&nbsp;= BV × 본인 비율
+실수령 = 총액 − Σ(직속 하위 각각의 총액)</div>
+
+    <h2 style="margin-top:28px;">후원수당 비율표</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>월간 구매실적 (개인 그룹 PV)</th><th class="r">비율</th></tr>
+        </thead>
+        <tbody id="rateTableBody"></tbody>
+      </table>
+    </div>
+
+    <h2 style="margin-top:28px;">입력할 때 주의할 점</h2>
+    <ul>
+      <li><strong>개인 그룹 PV는 하위를 포함한 값</strong>입니다. 상위의 값이 직속 하위 PV 합보다 작으면 경고가 표시됩니다.</li>
+      <li>후원수당 비율 <strong>21%를 달성한 레그의 실적은 상위의 개인 그룹 PV에서 제외</strong>됩니다. 하위가 21%에 도달하면 상위 PV에서 그 레그를 빼고 입력하세요.</li>
+      <li>다운라인이 21%를 달성하면 상위 계열도 21%로 인정되지만, 이 계산기는 입력한 그룹 PV만으로 비율을 정합니다.</li>
+      <li>PV : BV 비율은 제품마다 다를 수 있고 회계연도별로 조정됩니다. 기본값 1.78은 PF2027 기준입니다.</li>
+    </ul>
+
+    <p class="disclaimer">
+      본 계산은 입력값에 근거한 추정치이며 실제 지급액과 다를 수 있습니다.
+      루비·리더십·MD 보너스 등 다른 코어 보너스는 포함되어 있지 않습니다.
+    </p>
+  </section>
+
+</div>
+
+<script>
+"use strict";
+
+/* ---------------- 후원수당 비율표 ---------------- */
+var RATE_TABLE = [
+  { min: 10000000, rate: 0.21 },
+  { min:  6800000, rate: 0.18 },
+  { min:  4000000, rate: 0.15 },
+  { min:  2400000, rate: 0.12 },
+  { min:  1200000, rate: 0.09 },
+  { min:   600000, rate: 0.06 },
+  { min:   200000, rate: 0.03 }
+];
+
+function rateFor(pv) {
+  for (var i = 0; i < RATE_TABLE.length; i++) {
+    if (pv >= RATE_TABLE[i].min) return RATE_TABLE[i].rate;
+  }
+  return 0;
+}
+
+/* ---------------- 포맷터 ---------------- */
+function fmtInt(n) {
+  return Math.round(n).toLocaleString("ko-KR");
+}
+function fmtWon(n) {
+  return fmtInt(n) + "원";
+}
+function korUnit(n) {
+  n = Math.round(n);
+  if (n === 0) return "0";
+  var sign = n < 0 ? "-" : "";
+  n = Math.abs(n);
+  var eok = Math.floor(n / 100000000);
+  var man = Math.floor((n % 100000000) / 10000);
+  var rest = n % 10000;
+  var parts = [];
+  if (eok) parts.push(fmtInt(eok) + "억");
+  if (man) parts.push(fmtInt(man) + "만");
+  if (rest || parts.length === 0) parts.push(fmtInt(rest));
+  return sign + parts.join(" ");
+}
+
+/* ---------------- 상태 ---------------- */
+var STORAGE_KEY = "amway-bonus-v1";
+var uid = 0;
+function nextId() { uid += 1; return "n" + uid; }
+
+function makeNode(name, pv, children) {
+  return { id: nextId(), name: name, pv: pv, children: children || [] };
+}
+
+function exampleTree() {
+  /* 책자 예시: 나(개인 PV 20만) + 하위 340만 × 3 → 개인 그룹 PV 1,040만 */
+  uid = 0;
+  return makeNode("나", 10400000, [
+    makeNode("다운라인 B", 3400000, []),
+    makeNode("다운라인 C", 3400000, []),
+    makeNode("다운라인 D", 3400000, [])
+  ]);
+}
+
+function emptyTree() {
+  uid = 0;
+  return makeNode("나", 0, [makeNode("다운라인 1", 0, [])]);
+}
+
+var state = { ratio: 1.78, root: exampleTree(), isExample: true };
+
+function save() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      ratio: state.ratio, root: state.root, isExample: state.isExample
+    }));
+  } catch (e) { /* 저장 불가 환경은 무시 */ }
+}
+
+function load() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    var data = JSON.parse(raw);
+    if (!data || !data.root) return;
+    var maxId = 0;
+    (function walk(n) {
+      if (!n || typeof n !== "object") return;
+      if (typeof n.id === "string" && n.id.charAt(0) === "n") {
+        var v = parseInt(n.id.slice(1), 10);
+        if (!isNaN(v) && v > maxId) maxId = v;
+      }
+      n.pv = Number(n.pv) || 0;
+      n.name = typeof n.name === "string" ? n.name : "이름 없음";
+      n.children = Array.isArray(n.children) ? n.children : [];
+      n.children.forEach(walk);
+    })(data.root);
+    uid = maxId;
+    state.root = data.root;
+    state.ratio = Number(data.ratio) > 0 ? Number(data.ratio) : 1.78;
+    state.isExample = !!data.isExample;
+  } catch (e) { /* 손상된 값은 무시하고 기본 상태 사용 */ }
+}
+
+/* ---------------- 트리 유틸 ---------------- */
+function findParent(node, targetId) {
+  for (var i = 0; i < node.children.length; i++) {
+    if (node.children[i].id === targetId) return node;
+    var found = findParent(node.children[i], targetId);
+    if (found) return found;
+  }
+  return null;
+}
+function findNode(node, targetId) {
+  if (node.id === targetId) return node;
+  for (var i = 0; i < node.children.length; i++) {
+    var found = findNode(node.children[i], targetId);
+    if (found) return found;
+  }
+  return null;
+}
+function maxDepth(node) {
+  if (!node.children.length) return 0;
+  var d = 0;
+  node.children.forEach(function (c) { d = Math.max(d, maxDepth(c) + 1); });
+  return d;
+}
+function countNodes(node) {
+  var c = 1;
+  node.children.forEach(function (ch) { c += countNodes(ch); });
+  return c;
+}
+
+/* ---------------- 계산 (아래에서 위로) ---------------- */
+function compute(node) {
+  var kids = node.children.map(compute);
+  var pv = node.pv || 0;
+  var bv = pv * state.ratio;
+  var rate = rateFor(pv);
+  var gross = Math.round(bv * rate);
+  var childGross = 0;
+  var childPv = 0;
+  kids.forEach(function (k) {
+    childGross += k.gross;
+    /* 21% 달성 레그는 규정상 상위 개인 그룹 PV에서 제외되므로 합산 검증에서 뺀다 */
+    if (k.rate < 0.21) childPv += k.pv;
+  });
+  return {
+    node: node,
+    pv: pv,
+    bv: bv,
+    rate: rate,
+    gross: gross,
+    childGross: childGross,
+    childPv: childPv,
+    net: gross - childGross,
+    kids: kids
+  };
+}
+
+function flatten(result, out) {
+  out = out || [];
+  out.push(result);
+  result.kids.forEach(function (k) { flatten(k, out); });
+  return out;
+}
+
+/* ---------------- 렌더링 ---------------- */
+var treeEl = document.getElementById("tree");
+var refs = {};
+
+function el(tag, cls, text) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function buildCard(node, depth) {
+  var wrapper = el("div");
+
+  var card = el("div", "card" + (depth === 0 ? " root" : ""));
+
+  /* 상단: 단계 · 이름 · 비율 · 액션 */
+  var top = el("div", "card-top");
+  top.appendChild(el("span", "depth-tag", depth === 0 ? "본인" : depth + "단계"));
+
+  var nameInput = el("input", "name-input");
+  nameInput.type = "text";
+  nameInput.value = node.name;
+  nameInput.id = "name-" + node.id;
+  nameInput.setAttribute("aria-label", "이름");
+  nameInput.addEventListener("input", function () {
+    node.name = nameInput.value;
+    state.isExample = false;
+    if (depth === 0) refs.rootLabel.textContent = (node.name || "본인") + "의 후원수당";
+    save();
+  });
+  top.appendChild(nameInput);
+
+  var badge = el("span", "rate-badge", "0%");
+  top.appendChild(badge);
+
+  var actions = el("div", "card-actions");
+  var addBtn = el("button", "icon-btn", "+ 다운라인");
+  addBtn.type = "button";
+  addBtn.addEventListener("click", function () {
+    node.children.push(makeNode("다운라인 " + (node.children.length + 1), 0, []));
+    state.isExample = false;
+    render();
+    save();
+  });
+  actions.appendChild(addBtn);
+
+  if (depth > 0) {
+    var delBtn = el("button", "icon-btn del", "삭제");
+    delBtn.type = "button";
+    delBtn.addEventListener("click", function () {
+      var parent = findParent(state.root, node.id);
+      if (!parent) return;
+      parent.children = parent.children.filter(function (c) { return c.id !== node.id; });
+      state.isExample = false;
+      render();
+      save();
+    });
+    actions.appendChild(delBtn);
+  }
+  top.appendChild(actions);
+  card.appendChild(top);
+
+  /* PV 입력 · BV 표시 */
+  var pvRow = el("div", "pv-row");
+
+  var pvField = el("div", "field");
+  var pvLabel = el("label", "field-label", "개인 그룹 PV");
+  pvLabel.setAttribute("for", "pv-" + node.id);
+  pvField.appendChild(pvLabel);
+  var pvInput = el("input", "pv-input num");
+  pvInput.type = "text";
+  pvInput.inputMode = "numeric";
+  pvInput.id = "pv-" + node.id;
+  pvInput.value = node.pv ? fmtInt(node.pv) : "";
+  pvInput.placeholder = "0";
+  pvField.appendChild(pvInput);
+  pvRow.appendChild(pvField);
+
+  var bvField = el("div", "field");
+  bvField.appendChild(el("span", "field-label", "BV (자동)"));
+  var bvOut = el("div", "bv-readout num", "0");
+  bvField.appendChild(bvOut);
+  pvRow.appendChild(bvField);
+
+  var hint = el("div", "pv-hint");
+  pvRow.appendChild(hint);
+  card.appendChild(pvRow);
+
+  pvInput.addEventListener("input", function () {
+    var digits = pvInput.value.replace(/[^0-9]/g, "");
+    node.pv = digits ? parseInt(digits, 10) : 0;
+    state.isExample = false;
+    recompute();
+    save();
+  });
+  pvInput.addEventListener("blur", function () {
+    pvInput.value = node.pv ? fmtInt(node.pv) : "";
+  });
+  pvInput.addEventListener("focus", function () {
+    pvInput.value = node.pv ? String(node.pv) : "";
+    pvInput.select();
+  });
+
+  /* 계산 라인 */
+  var calc = el("div", "calc-line");
+  var grossOut = el("span", "val num", "0원");
+  var minusOut = el("span", "val num", "0원");
+  var netOut = el("span", "net num", "0원");
+  calc.appendChild(el("span", null, "총액"));
+  calc.appendChild(grossOut);
+  calc.appendChild(el("span", "op", "−"));
+  calc.appendChild(el("span", null, "하위 합계"));
+  calc.appendChild(minusOut);
+  calc.appendChild(el("span", "op", "="));
+  calc.appendChild(netOut);
+  card.appendChild(calc);
+
+  var noteBox = el("div");
+  noteBox.hidden = true;
+  card.appendChild(noteBox);
+
+  wrapper.appendChild(card);
+
+  refs[node.id] = {
+    card: card, badge: badge, bvOut: bvOut, hint: hint,
+    calc: calc, grossOut: grossOut, minusOut: minusOut, netOut: netOut,
+    noteBox: noteBox, pvInput: pvInput
+  };
+
+  if (node.children.length) {
+    var kidsEl = el("div", "kids");
+    node.children.forEach(function (child) {
+      kidsEl.appendChild(buildCard(child, depth + 1));
+    });
+    wrapper.appendChild(kidsEl);
+  }
+
+  return wrapper;
+}
+
+function recompute() {
+  var result = compute(state.root);
+  var all = flatten(result);
+
+  all.forEach(function (r) {
+    var ref = refs[r.node.id];
+    if (!ref) return;
+
+    var pct = Math.round(r.rate * 100);
+    ref.badge.textContent = pct + "%";
+    ref.badge.className = "rate-badge lv" + pct;
+
+    ref.bvOut.textContent = fmtInt(r.bv);
+    ref.hint.textContent = r.pv ? korUnit(r.pv) + " PV" : "20만 PV 미만은 미지급";
+
+    ref.grossOut.textContent = fmtWon(r.gross);
+    ref.minusOut.textContent = fmtWon(r.childGross);
+    ref.netOut.textContent = fmtWon(r.net);
+
+    var isNeg = r.net < 0;
+    ref.calc.className = "calc-line" + (isNeg ? " is-neg" : "");
+    ref.card.className = ref.card.className.replace(/ ?neg/, "") + (isNeg ? " neg" : "");
+
+    /* 경고 · 안내 */
+    var notes = [];
+    if (r.childPv > r.pv) {
+      notes.push({
+        cls: "note",
+        text: "직속 하위 그룹 PV 합계 " + fmtInt(r.childPv) +
+              "가 본인 그룹 PV " + fmtInt(r.pv) + "보다 큽니다. 개인 그룹 PV는 하위를 포함한 값입니다."
+      });
+    }
+    if (isNeg) {
+      notes.push({
+        cls: "note",
+        text: "실수령이 음수입니다. 하위 비율이 본인보다 높은 입력이므로 그룹 PV를 확인하세요."
+      });
+    }
+    var has21Child = r.kids.some(function (k) { return k.rate >= 0.21; });
+    if (has21Child) {
+      notes.push({
+        cls: "note info",
+        text: "21%를 달성한 하위 레그가 있습니다. 실제 규정에서는 그 레그의 실적이 본인 개인 그룹 PV에서 제외됩니다."
+      });
+    }
+
+    ref.noteBox.textContent = "";
+    if (notes.length) {
+      notes.forEach(function (n) {
+        ref.noteBox.appendChild(el("div", n.cls, n.text));
+      });
+      ref.noteBox.hidden = false;
+    } else {
+      ref.noteBox.hidden = true;
+    }
+  });
+
+  /* 요약 */
+  var totalNet = all.reduce(function (s, r) { return s + r.net; }, 0);
+  refs.sumRootNet.textContent = fmtWon(result.net);
+  refs.sumRootNet.className = "sum-value money num" + (result.net < 0 ? " neg" : "");
+  refs.sumRootSub.textContent = "그룹 PV " + fmtInt(result.pv) +
+    " · " + Math.round(result.rate * 100) + "%";
+  refs.sumAll.textContent = fmtWon(totalNet);
+  refs.sumCount.textContent = fmtInt(countNodes(state.root)) + "명";
+  refs.sumDepth.textContent = "최대 " + maxDepth(state.root) + "단계";
+  refs.fRatio.textContent = String(state.ratio);
+}
+
+function render() {
+  refs = {
+    rootLabel: document.getElementById("rootLabel"),
+    sumRootNet: document.getElementById("sumRootNet"),
+    sumRootSub: document.getElementById("sumRootSub"),
+    sumAll: document.getElementById("sumAll"),
+    sumCount: document.getElementById("sumCount"),
+    sumDepth: document.getElementById("sumDepth"),
+    fRatio: document.getElementById("fRatio")
+  };
+  refs.rootLabel.textContent = (state.root.name || "본인") + "의 후원수당";
+  treeEl.textContent = "";
+  treeEl.appendChild(buildCard(state.root, 0));
+  recompute();
+}
+
+/* ---------------- 비율표 렌더 ---------------- */
+(function renderRateTable() {
+  var body = document.getElementById("rateTableBody");
+  RATE_TABLE.forEach(function (row) {
+    var tr = el("tr");
+    tr.appendChild(el("td", null, korUnit(row.min) + " PV 이상"));
+    var td = el("td", "r num", Math.round(row.rate * 100) + "%");
+    tr.appendChild(td);
+    body.appendChild(tr);
+  });
+  var last = el("tr");
+  last.appendChild(el("td", null, "20만 PV 미만"));
+  last.appendChild(el("td", "r num", "미지급"));
+  body.appendChild(last);
+})();
+
+/* ---------------- 컨트롤 ---------------- */
+var ratioInput = document.getElementById("ratioInput");
+ratioInput.addEventListener("input", function () {
+  var v = parseFloat(ratioInput.value.replace(/[^0-9.]/g, ""));
+  if (!isNaN(v) && v > 0) {
+    state.ratio = v;
+    recompute();
+    save();
+  }
+});
+ratioInput.addEventListener("blur", function () {
+  ratioInput.value = String(state.ratio);
+});
+
+document.getElementById("exampleBtn").addEventListener("click", function () {
+  state.root = exampleTree();
+  state.isExample = true;
+  render();
+  save();
+});
+
+document.getElementById("resetBtn").addEventListener("click", function () {
+  state.root = emptyTree();
+  state.isExample = false;
+  render();
+  save();
+});
+
+/* 테마 전환: 시스템 → 라이트 → 다크 */
+var themeBtn = document.getElementById("themeBtn");
+var THEME_KEY = "amway-bonus-theme";
+var themeOrder = ["system", "light", "dark"];
+var themeLabel = { system: "테마: 시스템", light: "테마: 라이트", dark: "테마: 다크" };
+var theme = "system";
+try {
+  var saved = localStorage.getItem(THEME_KEY);
+  if (saved && themeOrder.indexOf(saved) !== -1) theme = saved;
+} catch (e) { /* 무시 */ }
+
+function applyTheme() {
+  if (theme === "system") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", theme);
+  themeBtn.textContent = themeLabel[theme];
+}
+themeBtn.addEventListener("click", function () {
+  theme = themeOrder[(themeOrder.indexOf(theme) + 1) % themeOrder.length];
+  applyTheme();
+  try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* 무시 */ }
+});
+applyTheme();
+
+/* ---------------- 시작 ---------------- */
+load();
+ratioInput.value = String(state.ratio);
+render();
+</script>
+</body>
+</html>
