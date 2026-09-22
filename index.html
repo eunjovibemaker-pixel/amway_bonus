@@ -280,6 +280,11 @@ select.text-in{max-width:230px;}
 .inc-amt{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--bronze);}
 .inc-why{font-size:11.5px;color:var(--ink-muted);}
 .inc-row.off .inc-amt{color:var(--ink-muted);text-decoration:line-through;}
+.inc-tag{
+  font-size:10.5px;padding:1px 6px;border-radius:var(--radius);
+  background:var(--bronze);color:var(--surface);white-space:nowrap;
+}
+.tot-extra{font-size:12.5px;color:var(--bronze);font-weight:500;}
 .total-line{
   display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
   margin-top:9px;padding-top:9px;border-top:1px solid var(--line);
@@ -329,7 +334,7 @@ tbody tr:hover{background:var(--surface);}
   <header class="masthead">
     <div>
       <h1>후원수당 계산기</h1>
-      <p class="subtitle">후원수당 3%~21% 차액 지급액과 브론즈 빌더 인센티브를 계산합니다.</p>
+      <p class="subtitle">후원수당 3%~21% 차액 지급액과 브론즈 인센티브를 계산합니다.</p>
     </div>
     <button type="button" class="btn" id="themeBtn">테마 전환</button>
   </header>
@@ -415,41 +420,73 @@ tbody tr:hover{background:var(--surface);}
       </table>
     </div>
 
-    <h2 style="margin-top:28px;">브론즈 빌더 인센티브</h2>
+    <h2 style="margin-top:28px;">브론즈 인센티브 두 가지</h2>
     <p>
-      코어 플러스 인센티브 중 하나로, 아래 구조를 만든 달마다 <strong>30만 원</strong>이 지급됩니다.
-      계산기는 이 구조 조건만 자동으로 판정하며, 충족되면 해당 카드에 항목이 나타납니다.
+      코어 플러스 인센티브 중 초기 사업자를 위한 두 프로그램입니다. 계산기는 <strong>구조 조건만</strong>
+      자동으로 판정하며, 충족되면 해당 카드에 항목이 나타납니다.
+      브론즈 빌더 조건을 만족하면 파운데이션 조건도 자동으로 만족하므로 두 줄이 함께 나올 수 있습니다.
     </p>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>구분</th><th>내용</th><th class="r">자동 판정</th></tr></thead>
+        <thead><tr><th>프로그램</th><th>본인</th><th>하위 레그</th><th class="r">혜택</th><th class="r">한도</th></tr></thead>
         <tbody>
-          <tr><td>본인 실적</td><td>후원수당 비율 <strong>15% 이상</strong> (개인 그룹 PV 400만 이상)</td><td class="r">○</td></tr>
-          <tr><td>하위 구조</td><td><strong>6% 이상</strong> 달성한 프론트라인 레그 <strong>3개 이상</strong> 후원</td><td class="r">○</td></tr>
-          <tr><td>금액</td><td>월 300,000원</td><td class="r">○</td></tr>
-          <tr><td>대상자</td><td>PF15 이후(2014년 9월~최초 달성 전월) <strong>골드 프로듀서 미만</strong> 달성자</td><td class="r">×</td></tr>
-          <tr><td>지급 한도</td><td>최초 달성 월 포함 <strong>18개월 내 최대 12회</strong></td><td class="r">×</td></tr>
+          <tr>
+            <td><strong>브론즈 파운데이션</strong></td>
+            <td>9% 이상<br><span style="color:var(--ink-muted);font-size:12px;">(그룹 PV 120만 이상)</span></td>
+            <td>3% 이상 3개 이상</td>
+            <td class="r">바우처 90,000원<br><span style="color:var(--ink-muted);font-size:12px;">30,000원 × 3매</span></td>
+            <td class="r">12개월 내 3회</td>
+          </tr>
+          <tr>
+            <td><strong>브론즈 빌더</strong></td>
+            <td>15% 이상<br><span style="color:var(--ink-muted);font-size:12px;">(그룹 PV 400만 이상)</span></td>
+            <td>6% 이상 3개 이상</td>
+            <td class="r">현금 300,000원</td>
+            <td class="r">18개월 내 12회</td>
+          </tr>
         </tbody>
       </table>
     </div>
     <p style="margin-top:14px;">
-      아래 두 가지는 <strong>과거 이력</strong>이라 이번 달 입력값만으로는 알 수 없습니다.
-      본인이 대상자가 아니거나 12회를 이미 채웠다면 카드의 <strong>브론즈 빌더</strong> 체크를 해제하세요.
-      합계에서 빠집니다.
+      <strong>브론즈 파운데이션은 현금이 아니라 암웨이 바우처</strong>입니다. 그래서 월 수령 합계에 더하지 않고
+      옆에 따로 표시합니다.
     </p>
+
+    <h2 style="margin-top:28px;">자동 판정되지 않는 조건</h2>
+    <p>
+      아래는 <strong>과거 이력</strong>이라 이번 달 입력값만으로는 알 수 없습니다. 해당되지 않으면
+      카드의 체크를 해제하세요. 합계에서 빠집니다.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>프로그램</th><th>대상자</th><th>지급 한도</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>브론즈 파운데이션</strong></td>
+            <td>PF26(2025년 9월~2026년 8월) 기간 <strong>15% 미만</strong> 달성자이며 PF27 내 최초 달성자</td>
+            <td>최초 달성 월 포함 <strong>12개월 내 3회</strong></td>
+          </tr>
+          <tr>
+            <td><strong>브론즈 빌더</strong></td>
+            <td>PF15 이후(2014년 9월~최초 달성 전월) <strong>골드 프로듀서 미만</strong> 달성자</td>
+            <td>최초 달성 월 포함 <strong>18개월 내 12회</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <h2 style="margin-top:28px;">입력할 때 주의할 점</h2>
     <ul>
       <li><strong>개인 그룹 PV와 BV 모두 하위를 포함한 값</strong>입니다. 상위의 값이 직속 하위 합보다 작으면 경고가 표시됩니다.</li>
       <li>후원수당 비율 <strong>21%를 달성한 레그의 실적은 상위의 개인 그룹 PV에서 제외</strong>됩니다. 하위가 21%에 도달하면 상위 PV에서 그 레그를 빼고 입력하세요.</li>
       <li>다운라인이 21%를 달성하면 상위 계열도 21%로 인정되지만, 이 계산기는 입력한 그룹 PV만으로 비율을 정합니다.</li>
-      <li>브론즈 빌더는 <strong>이번 달 구조 조건만</strong> 판정합니다. 대상자 여부와 12회 한도는 직접 확인하세요.</li>
+      <li>브론즈 인센티브는 <strong>이번 달 구조 조건만</strong> 판정합니다. 대상자 여부와 지급 횟수 한도는 직접 확인하세요.</li>
       <li>저장한 시나리오는 <strong>이 브라우저 안에만</strong> 남습니다. 다른 기기로 옮기려면 <strong>백업 · 복원</strong>의 텍스트를 복사해 가세요.</li>
     </ul>
 
     <p class="disclaimer">
       본 계산은 입력값에 근거한 추정치이며 실제 지급액과 다를 수 있습니다.
-      후원수당과 브론즈 빌더 인센티브만 다룹니다. 루비·리더십·MD 보너스 등 다른 코어 보너스와
+      후원수당과 브론즈 파운데이션·브론즈 빌더만 다룹니다. 루비·리더십·MD 보너스 등 다른 코어 보너스와
       나머지 코어 플러스 인센티브는 포함되어 있지 않습니다.
     </p>
   </section>
@@ -473,6 +510,11 @@ var RATE_TABLE = [
 /* 코어 플러스 · 브론즈 빌더 인센티브
    조건: 본인 15% 이상 & 하위 6% 이상 달성한 3개 이상의 레그 후원 → 월 300,000원 */
 var BRONZE_BUILDER = { amount: 300000, selfRate: 0.15, legRate: 0.06, legCount: 3 };
+
+/* 코어 플러스 · 브론즈 파운데이션 프로그램
+   조건: 본인 9% 이상 & 하위 3% 이상 달성한 3개 이상의 레그 후원
+   혜택: 암웨이 바우처 90,000원 (30,000원 × 3매) — 현금이 아니므로 합계와 분리해 표시한다 */
+var BRONZE_FOUNDATION = { voucher: 90000, selfRate: 0.09, legRate: 0.03, legCount: 3 };
 
 function rateFor(pv) {
   for (var i = 0; i < RATE_TABLE.length; i++) {
@@ -512,7 +554,7 @@ var uid = 0;
 function nextId() { uid += 1; return "n" + uid; }
 
 function makeNode(name, pv, children) {
-  return { id: nextId(), name: name, pv: pv, bv: 0, bvAuto: true, bbOn: true, children: children || [] };
+  return { id: nextId(), name: name, pv: pv, bv: 0, bvAuto: true, bbOn: true, bfOn: true, children: children || [] };
 }
 
 function exampleTree() {
@@ -547,6 +589,7 @@ function normalizeTree(root) {
     n.bv = Number(n.bv) || 0;
     n.bvAuto = n.bvAuto !== false;      /* 구버전 데이터는 자동으로 취급 */
     n.bbOn = n.bbOn !== false;          /* 브론즈 빌더 대상자 여부 (기본 포함) */
+    n.bfOn = n.bfOn !== false;          /* 브론즈 파운데이션 대상자 여부 (기본 포함) */
     n.children = Array.isArray(n.children) ? n.children : [];
     n.children.forEach(walk);
   })(root);
@@ -631,15 +674,23 @@ function compute(node) {
     if (k.rate < 0.21) { childPv += k.pv; childBv += k.bv; }
   });
   /* 브론즈 빌더: 본인 15% 이상 + 6% 이상 프론트라인 레그 3개 이상 */
-  var okLegs = kids.filter(function (k) { return k.rate >= BRONZE_BUILDER.legRate; }).length;
-  var bbQualified = rate >= BRONZE_BUILDER.selfRate && okLegs >= BRONZE_BUILDER.legCount;
+  var legs6 = kids.filter(function (k) { return k.rate >= BRONZE_BUILDER.legRate; }).length;
+  var bbQualified = rate >= BRONZE_BUILDER.selfRate && legs6 >= BRONZE_BUILDER.legCount;
   var bbAmount = (bbQualified && node.bbOn !== false) ? BRONZE_BUILDER.amount : 0;
+
+  /* 브론즈 파운데이션: 본인 9% 이상 + 3% 이상 프론트라인 레그 3개 이상 (바우처) */
+  var legs3 = kids.filter(function (k) { return k.rate >= BRONZE_FOUNDATION.legRate; }).length;
+  var bfQualified = rate >= BRONZE_FOUNDATION.selfRate && legs3 >= BRONZE_FOUNDATION.legCount;
+  var bfVoucher = (bfQualified && node.bfOn !== false) ? BRONZE_FOUNDATION.voucher : 0;
+
   var net = gross - childGross;
 
   return {
     node: node, pv: pv, bv: bv, rate: rate, gross: gross,
     childGross: childGross, childPv: childPv, childBv: childBv,
-    net: net, okLegs: okLegs, bbQualified: bbQualified, bbAmount: bbAmount,
+    net: net,
+    legs6: legs6, bbQualified: bbQualified, bbAmount: bbAmount,
+    legs3: legs3, bfQualified: bfQualified, bfVoucher: bfVoucher,
     total: net + bbAmount, kids: kids
   };
 }
@@ -821,11 +872,37 @@ function buildCard(node, depth) {
     recompute(); saveCurrent();
   });
 
+  /* 브론즈 파운데이션 (바우처) */
+  var bfRow = el("div", "inc-row");
+  bfRow.hidden = true;
+  var bfChk = el("label", "inc-chk");
+  var bfBox = document.createElement("input");
+  bfBox.type = "checkbox";
+  bfBox.id = "bf-" + node.id;
+  bfBox.checked = node.bfOn !== false;
+  bfChk.appendChild(bfBox);
+  bfChk.appendChild(document.createTextNode("브론즈 파운데이션"));
+  bfRow.appendChild(bfChk);
+  bfRow.appendChild(el("span", "inc-tag", "바우처"));
+  var bfAmt = el("span", "inc-amt", "90,000원");
+  bfRow.appendChild(bfAmt);
+  var bfWhy = el("span", "inc-why", "");
+  bfRow.appendChild(bfWhy);
+  card.appendChild(bfRow);
+
+  bfBox.addEventListener("change", function () {
+    node.bfOn = bfBox.checked;
+    recompute(); saveCurrent();
+  });
+
   var totalLine = el("div", "total-line");
   totalLine.hidden = true;
   totalLine.appendChild(el("span", null, "월 수령 합계"));
   var totOut = el("span", "tot", "0원");
   totalLine.appendChild(totOut);
+  var totExtra = el("span", "tot-extra", "");
+  totExtra.hidden = true;
+  totalLine.appendChild(totExtra);
   card.appendChild(totalLine);
 
   var noteBox = el("div");
@@ -840,7 +917,8 @@ function buildCard(node, depth) {
     bvInput: bvInput, bvHint: bvHint, autoTag: autoTag, resetAuto: resetAuto,
     calc: calc, grossOut: grossOut, minusOut: minusOut, netOut: netOut,
     incRow: incRow, incBox: incBox, incAmt: incAmt, incWhy: incWhy,
-    totalLine: totalLine, totOut: totOut, noteBox: noteBox
+    bfRow: bfRow, bfBox: bfBox, bfAmt: bfAmt, bfWhy: bfWhy,
+    totalLine: totalLine, totOut: totOut, totExtra: totExtra, noteBox: noteBox
   };
 
   if (node.children.length) {
@@ -889,19 +967,35 @@ function recompute() {
     ref.calc.className = "calc-line" + (isNeg ? " is-neg" : "");
     ref.card.className = "card" + (r.node === state.root ? " root" : "") + (isNeg ? " neg" : "");
 
-    /* 브론즈 빌더 */
+    /* 브론즈 빌더 (현금) */
     ref.incRow.hidden = !r.bbQualified;
     if (r.bbQualified) {
-      var on = node.bbOn !== false;
-      ref.incBox.checked = on;
-      ref.incRow.className = "inc-row" + (on ? "" : " off");
+      var bbOn = node.bbOn !== false;
+      ref.incBox.checked = bbOn;
+      ref.incRow.className = "inc-row" + (bbOn ? "" : " off");
       ref.incAmt.textContent = "+" + fmtWon(BRONZE_BUILDER.amount);
-      ref.incWhy.textContent = "조건 충족 · 본인 " + pct + "% · 6% 이상 레그 " + r.okLegs + "개"
-        + (on ? "" : " (대상자 아님으로 제외 중)");
-      ref.totalLine.hidden = !on;
+      ref.incWhy.textContent = "조건 충족 · 본인 " + pct + "% · 6% 이상 레그 " + r.legs6 + "개"
+        + (bbOn ? "" : " (대상자 아님으로 제외 중)");
+    }
+
+    /* 브론즈 파운데이션 (바우처) */
+    ref.bfRow.hidden = !r.bfQualified;
+    if (r.bfQualified) {
+      var bfOn = node.bfOn !== false;
+      ref.bfBox.checked = bfOn;
+      ref.bfRow.className = "inc-row" + (bfOn ? "" : " off");
+      ref.bfAmt.textContent = fmtWon(BRONZE_FOUNDATION.voucher);
+      ref.bfWhy.textContent = "조건 충족 · 본인 " + pct + "% · 3% 이상 레그 " + r.legs3 + "개 · 30,000원 × 3매"
+        + (bfOn ? "" : " (대상자 아님으로 제외 중)");
+    }
+
+    /* 월 수령 합계 — 현금만, 바우처는 옆에 따로 */
+    var showTotal = r.bbAmount > 0 || r.bfVoucher > 0;
+    ref.totalLine.hidden = !showTotal;
+    if (showTotal) {
       ref.totOut.textContent = fmtWon(r.total);
-    } else {
-      ref.totalLine.hidden = true;
+      ref.totExtra.hidden = r.bfVoucher === 0;
+      ref.totExtra.textContent = r.bfVoucher ? "+ 바우처 " + fmtWon(r.bfVoucher) : "";
     }
 
     /* 경고 · 안내 */
@@ -936,16 +1030,27 @@ function recompute() {
 
   /* 요약 */
   var totalAll = all.reduce(function (s, r) { return s + r.total; }, 0);
+  var voucherAll = all.reduce(function (s, r) { return s + r.bfVoucher; }, 0);
   var bbCount = all.filter(function (r) { return r.bbAmount > 0; }).length;
+  var bfCount = all.filter(function (r) { return r.bfVoucher > 0; }).length;
+
   refs.sumRootNet.textContent = fmtWon(result.total);
   refs.sumRootNet.className = "sum-value money num" + (result.total < 0 ? " neg" : "");
-  refs.sumRootSub.textContent = "그룹 PV " + fmtInt(result.pv) + " · " + Math.round(result.rate * 100) + "%"
-    + (result.bbAmount > 0
-        ? "  ·  후원수당 " + fmtWon(result.net) + " + 브론즈 빌더 " + fmtWon(result.bbAmount)
-        : "");
+  var parts = ["그룹 PV " + fmtInt(result.pv) + " · " + Math.round(result.rate * 100) + "%"];
+  if (result.bbAmount > 0) {
+    parts.push("후원수당 " + fmtWon(result.net) + " + 브론즈 빌더 " + fmtWon(result.bbAmount));
+  }
+  if (result.bfVoucher > 0) {
+    parts.push("바우처 " + fmtWon(result.bfVoucher) + " 별도");
+  }
+  refs.sumRootSub.textContent = parts.join("  ·  ");
+
   refs.sumAll.textContent = fmtWon(totalAll);
-  refs.sumAllSub.textContent = bbCount
-    ? "후원수당 + 브론즈 빌더 " + bbCount + "명"
+  var allParts = [];
+  if (bbCount) allParts.push("브론즈 빌더 " + bbCount + "명");
+  if (bfCount) allParts.push("바우처 " + fmtWon(voucherAll) + " 별도");
+  refs.sumAllSub.textContent = allParts.length
+    ? "현금 합계 · " + allParts.join(" · ")
     : "모든 구성원의 실수령 합";
   refs.sumCount.textContent = fmtInt(countNodes(state.root)) + "명";
   refs.sumDepth.textContent = "최대 " + maxDepth(state.root) + "단계";
