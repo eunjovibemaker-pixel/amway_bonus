@@ -224,6 +224,18 @@ select.text-in{max-width:230px;}
 .rate-badge.lv18{background:var(--lv18-bg);color:var(--lv18-fg);}
 .rate-badge.lv21{background:var(--lv21-bg);color:var(--lv21-fg);}
 .card-actions{margin-left:auto;display:flex;gap:6px;}
+.lvl-btn{
+  background:transparent;border:1px solid var(--line);border-radius:var(--radius);
+  color:var(--ink-muted);font-family:"IBM Plex Mono",monospace;font-size:13px;
+  line-height:1;padding:5px 9px;cursor:pointer;
+}
+.lvl-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.lvl-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.guess-tag{
+  font-size:10.5px;padding:1px 6px;border-radius:var(--radius);
+  background:var(--warn-soft);color:var(--warn);white-space:nowrap;
+}
+#pasteReport{margin-top:10px;font-size:12.5px;}
 .icon-btn{
   background:transparent;border:1px solid var(--line);border-radius:var(--radius);
   color:var(--ink-muted);font-family:inherit;font-size:12px;padding:5px 10px;cursor:pointer;white-space:nowrap;
@@ -375,9 +387,27 @@ tbody tr:hover{background:var(--surface);}
     <button type="button" class="btn" id="loadBtn">불러오기</button>
     <button type="button" class="btn del" id="delBtn">삭제</button>
     <div class="spacer"></div>
+    <button type="button" class="btn" id="pasteBtn">표 붙여넣기</button>
     <button type="button" class="btn" id="dataBtn">백업 · 복원</button>
   </div>
   <div class="bar"><span class="save-note" id="saveNote"></span></div>
+
+  <div class="data-panel" id="pastePanel" hidden>
+    <p>
+      암웨이 사이트의 LOS 표를 <strong>통째로 드래그해서 복사</strong>한 뒤 여기 붙여넣으세요.
+      이름 목록과 숫자 목록이 따로 복사돼도 괜찮습니다. 들여쓰기가 사라져도
+      <strong>그룹 PV = 개인 PV + 자식들의 그룹 PV</strong> 규칙으로 계층을 되살립니다.
+      숫자는 <strong>그룹 PV·그룹 BV</strong>를 씁니다.
+    </p>
+    <textarea id="pasteText" spellcheck="false" aria-label="LOS 표 붙여넣기"
+      placeholder="이은조&amp;이승민 (7026089065)&#10;서혜령 (7026217881)&#10;...&#10;1,176,840&#9;2,008,700&#9;6,402,410&#9;11,096,650&#9;15%&#9;18%&#10;54,710&#9;87,720&#9;54,710&#9;87,720&#9;0%&#9;3%"></textarea>
+    <div class="data-actions">
+      <button type="button" class="btn primary" id="parseBtn">트리 만들기</button>
+      <button type="button" class="btn" id="pasteClearBtn">지우기</button>
+      <span class="save-note" id="pasteNote"></span>
+    </div>
+    <div id="pasteReport" hidden></div>
+  </div>
 
   <div class="data-panel" id="dataPanel" hidden>
     <p>
@@ -590,6 +620,7 @@ function normalizeTree(root) {
     n.bvAuto = n.bvAuto !== false;      /* 구버전 데이터는 자동으로 취급 */
     n.bbOn = n.bbOn !== false;          /* 브론즈 빌더 대상자 여부 (기본 포함) */
     n.bfOn = n.bfOn !== false;          /* 브론즈 파운데이션 대상자 여부 (기본 포함) */
+    n.guessed = n.guessed === true;     /* 붙여넣기 시 위치를 추정한 노드 */
     n.children = Array.isArray(n.children) ? n.children : [];
     n.children.forEach(walk);
   })(root);
@@ -633,6 +664,90 @@ function readSlots() {
 function writeSlots(arr) {
   try { localStorage.setItem(SLOTS_KEY, JSON.stringify(arr)); return true; }
   catch (e) { return false; }
+}
+
+/* ---------------- LOS 표 붙여넣기 파서 ---------------- */
+/* 사이트에서 복사하면 이름 블록과 숫자 블록이 따로 오고 들여쓰기가 사라진다.
+   한 줄에 이름과 숫자가 같이 오는 형태도 함께 받는다. */
+function splitRow(line) {
+  var parts = line.split("\t");
+  if (parts.length < 2) parts = line.split(/\s{2,}/);
+  if (parts.length < 2) parts = [line];
+  var nums = [], words = [];
+  parts.forEach(function (t) {
+    t = t.trim();
+    if (!t) return;
+    if (/^[\d,]+$/.test(t)) nums.push(parseInt(t.replace(/,/g, ""), 10));
+    else if (!/^\d+(\.\d+)?%$/.test(t)) words.push(t);
+  });
+  return { name: words.join(" "), nums: nums };
+}
+
+function parseLosText(raw) {
+  var lines = raw.split(/\r?\n/)
+    .map(function (l) { return l.replace(/\s+$/, ""); })
+    .filter(function (l) { return l.trim() !== ""; });
+  if (!lines.length) throw new Error("내용이 비어 있습니다.");
+
+  var names = [], rows = [];
+  lines.forEach(function (l) {
+    var r = splitRow(l);
+    if (r.nums.length >= 4) rows.push(r);
+    else if (r.name) names.push(r.name);
+  });
+
+  if (!rows.length) throw new Error("숫자 줄을 찾지 못했습니다. 개인 PV·개인 BV·그룹 PV·그룹 BV 4개 열이 포함되도록 복사해 주세요.");
+
+  /* 이름을 숫자 줄에 붙인다 */
+  var items;
+  if (names.length === rows.length) {
+    items = rows.map(function (r, i) { return { name: names[i], nums: r.nums }; });
+  } else if (names.length === 0 && rows.every(function (r) { return r.name; })) {
+    items = rows.map(function (r) { return { name: r.name, nums: r.nums }; });
+  } else if (names.length === 0) {
+    items = rows.map(function (r, i) { return { name: r.name || ("구성원 " + (i + 1)), nums: r.nums }; });
+  } else {
+    throw new Error("이름 " + names.length + "줄과 숫자 " + rows.length + "줄의 개수가 다릅니다. 표 전체를 다시 복사해 주세요.");
+  }
+
+  /* 그룹 PV = 개인 PV + 자식들의 그룹 PV 규칙으로 계층 역산 */
+  var nodes = items.map(function (it) {
+    return {
+      id: null, name: it.name,
+      ppv: it.nums[0], pv: it.nums[2], bv: it.nums[3],
+      bvAuto: false, bbOn: true, bfOn: true, guessed: false, children: []
+    };
+  });
+
+  var root = nodes[0];
+  var stack = [{ n: root, rem: root.pv - root.ppv }];
+  for (var i = 1; i < nodes.length; i++) {
+    var node = nodes[i];
+    if (node.pv === 0) {
+      /* 실적이 0이면 합계로 위치를 알 수 없다 → 직전 행의 형제로 두고 표시해 둔다 */
+      if (stack.length > 1) stack.pop();
+      node.guessed = true;
+    } else {
+      while (stack.length > 1 && stack[stack.length - 1].rem < node.pv) stack.pop();
+    }
+    var parent = stack[stack.length - 1];
+    parent.n.children.push(node);
+    parent.rem -= node.pv;
+    stack.push({ n: node, rem: node.pv - node.ppv });
+  }
+
+  /* 합계 재검증 */
+  var mismatches = [];
+  (function check(n) {
+    var sum = n.ppv;
+    n.children.forEach(function (c) { sum += c.pv; });
+    if (sum !== n.pv) mismatches.push(n.name);
+    n.children.forEach(check);
+  })(root);
+
+  var guessed = nodes.filter(function (n) { return n.guessed; }).map(function (n) { return n.name; });
+  nodes.forEach(function (n) { delete n.ppv; });
+  return { root: root, count: nodes.length, guessed: guessed, mismatches: mismatches };
 }
 
 /* ---------------- 트리 유틸 ---------------- */
@@ -736,7 +851,51 @@ function buildCard(node, depth) {
   var badge = el("span", "rate-badge", "0%");
   top.appendChild(badge);
 
+  if (node.guessed) {
+    var gTag = el("span", "guess-tag", "위치 추정");
+    gTag.title = "실적이 0이라 합계로 위치를 확정할 수 없었습니다. ← → 로 옮기면 표시가 사라집니다.";
+    top.appendChild(gTag);
+  }
+
   var actions = el("div", "card-actions");
+
+  if (depth > 0) {
+    var outBtn = el("button", "lvl-btn", "←");
+    outBtn.type = "button";
+    outBtn.title = "한 단계 밖으로 (상위의 형제가 됨)";
+    outBtn.setAttribute("aria-label", "한 단계 밖으로");
+    outBtn.disabled = depth < 2;
+    outBtn.addEventListener("click", function () {
+      var parent = findParent(state.root, node.id);
+      var grand = parent && findParent(state.root, parent.id);
+      if (!parent || !grand) return;
+      parent.children = parent.children.filter(function (c) { return c.id !== node.id; });
+      grand.children.splice(grand.children.indexOf(parent) + 1, 0, node);
+      node.guessed = false;
+      render(); saveCurrent();
+    });
+    actions.appendChild(outBtn);
+
+    var inBtn = el("button", "lvl-btn", "→");
+    inBtn.type = "button";
+    inBtn.title = "한 단계 안으로 (바로 위 형제의 하위가 됨)";
+    inBtn.setAttribute("aria-label", "한 단계 안으로");
+    var pNode = findParent(state.root, node.id);
+    inBtn.disabled = !pNode || pNode.children.indexOf(node) === 0;
+    inBtn.addEventListener("click", function () {
+      var parent = findParent(state.root, node.id);
+      if (!parent) return;
+      var idx = parent.children.indexOf(node);
+      if (idx <= 0) return;
+      var prev = parent.children[idx - 1];
+      parent.children.splice(idx, 1);
+      prev.children.push(node);
+      node.guessed = false;
+      render(); saveCurrent();
+    });
+    actions.appendChild(inBtn);
+  }
+
   var addBtn = el("button", "icon-btn", "+ 다운라인");
   addBtn.type = "button";
   addBtn.addEventListener("click", function () {
@@ -1197,6 +1356,7 @@ document.getElementById("delBtn").addEventListener("click", function () {
 document.getElementById("dataBtn").addEventListener("click", function () {
   dataPanel.hidden = !dataPanel.hidden;
   if (!dataPanel.hidden) {
+    pastePanel.hidden = true;
     dataText.value = JSON.stringify(snapshot(), null, 2);
     dataText.scrollTop = 0;
   }
@@ -1234,6 +1394,52 @@ document.getElementById("importBtn").addEventListener("click", function () {
   ratioInput.value = String(state.ratio);
   render(); saveCurrent();
   flash(dataNote, "가져왔습니다.");
+});
+
+/* LOS 표 붙여넣기 */
+var pastePanel = document.getElementById("pastePanel");
+var pasteText = document.getElementById("pasteText");
+var pasteNote = document.getElementById("pasteNote");
+var pasteReport = document.getElementById("pasteReport");
+
+document.getElementById("pasteBtn").addEventListener("click", function () {
+  pastePanel.hidden = !pastePanel.hidden;
+  if (!pastePanel.hidden) { dataPanel.hidden = true; pasteText.focus(); }
+});
+document.getElementById("pasteClearBtn").addEventListener("click", function () {
+  pasteText.value = "";
+  pasteReport.hidden = true;
+  pasteNote.textContent = "";
+  pasteText.focus();
+});
+
+document.getElementById("parseBtn").addEventListener("click", function () {
+  var raw = pasteText.value;
+  if (!raw.trim()) { flash(pasteNote, "붙여넣은 내용이 없습니다.", true); return; }
+  var result;
+  try { result = parseLosText(raw); }
+  catch (e) { flash(pasteNote, e.message, true); pasteReport.hidden = true; return; }
+
+  uid = 0;
+  state.root = normalizeTree(result.root);
+  render(); saveCurrent();
+
+  pasteReport.textContent = "";
+  var lines = [];
+  lines.push({ cls: "note info", text: result.count + "명을 불러왔습니다. 그룹 PV와 그룹 BV를 그대로 쓰므로 BV는 전부 직접 입력 상태입니다." });
+  if (result.guessed.length) {
+    lines.push({ cls: "note", text:
+      "실적이 0이라 위치를 확정할 수 없는 " + result.guessed.length + "명은 직전 사람의 형제로 두었습니다 — " +
+      result.guessed.join(", ") + ". 자리가 다르면 카드의 ← → 로 옮기세요. 금액에는 영향이 없습니다." });
+  }
+  if (result.mismatches.length) {
+    lines.push({ cls: "note", text:
+      "합계가 맞지 않는 항목이 있습니다 — " + result.mismatches.join(", ") +
+      ". 표가 일부만 복사되었을 수 있습니다." });
+  }
+  lines.forEach(function (n) { pasteReport.appendChild(el("div", n.cls, n.text)); });
+  pasteReport.hidden = false;
+  flash(pasteNote, "불러왔습니다.");
 });
 
 /* 테마: 시스템 → 라이트 → 다크 */
